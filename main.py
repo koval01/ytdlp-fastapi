@@ -24,5 +24,5 @@ def get(service: Literal["youtube", "twitch"], content_id: str):
 
 @app.get("/healthz")
 def healthz():
-    ydl.extract_info("https://www.youtube.com/watch?v=jNQXAC9IVRw", download=False)
+    yt_dlp.YoutubeDL({}).extract_info("https://www.youtube.com/watch?v=jNQXAC9IVRw", download=False)
     return ""
