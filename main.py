@@ -20,3 +20,9 @@ def get(service: Literal["youtube", "twitch"], content_id: str):
         except Exception as e:
             error = re.search(r"\[.*?] (.+): (.+)", str(e))
             return {"error": error.group(2), "id": error.group(1)}
+
+
+@app.get("/healthz")
+def healthz():
+    ydl.extract_info("https://www.youtube.com/watch?v=jNQXAC9IVRw", download=False)
+    return ""
