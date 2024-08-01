@@ -4,25 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd8c3813-a41e-44ed-b187-c8d9cccefecf" name="Changes" comment="Release">
-      <change afterPath="$PROJECT_DIR$/.env.local" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/middleware/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/middleware/process_time.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/error.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/playback.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/get/healthz.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/v1/get/playback.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/v1/get/video_fetch.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/v1/router.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/crypto.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/range_request.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/url_replacer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ytdlp-fastapi.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ytdlp-fastapi.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="fd8c3813-a41e-44ed-b187-c8d9cccefecf" name="Changes" comment="Update default env config">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ytdlp-fastapi.iml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,12 +116,56 @@
       <option name="project" value="LOCAL" />
       <updated>1721050576811</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Release">
+      <option name="closed" value="true" />
+      <created>1722541465038</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1722541465039</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update yt-dlp">
+      <option name="closed" value="true" />
+      <created>1722541896672</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1722541896672</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add configs for Heroku environment">
+      <option name="closed" value="true" />
+      <created>1722541920434</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1722541920434</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Update code for Python 3.12">
+      <option name="closed" value="true" />
+      <created>1722542337517</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1722542337517</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update default env config">
+      <option name="closed" value="true" />
+      <created>1722542352187</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1722542352187</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Release" />
-    <option name="LAST_COMMIT_MESSAGE" value="Release" />
+    <MESSAGE value="Update yt-dlp" />
+    <MESSAGE value="Add configs for Heroku environment" />
+    <MESSAGE value="Update code for Python 3.12" />
+    <MESSAGE value="Update default env config" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update default env config" />
   </component>
 </project>

@@ -7,13 +7,13 @@ from fastapi import Request, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
-from models.error import HTTPError
-from models.playback import Playback
+from app.models.error import HTTPError
+from app.models.playback import Playback
 
-from routes.v1.router import router
+from app.routes.v1.router import router
 
-from utils.crypto import Cryptography
-from utils.range_request import RangeRequestHandler
+from app.utils.crypto import Cryptography
+from app.utils.range_request import RangeRequestHandler
 
 
 @router.get(

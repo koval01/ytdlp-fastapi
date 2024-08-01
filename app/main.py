@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from utils.config import settings
+from app.utils.config import settings
 
-from middleware import process_time_middleware
+from app.middleware import process_time_middleware
 
-from routes.get import healthz
-from routes.v1.get import video_fetch, playback
+from app.routes.get import healthz
+from app.routes.v1.get import playback, video_fetch
 
 allowed_hosts = settings.ALLOWED_HOSTS.split(",")
 app = FastAPI(

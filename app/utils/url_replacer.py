@@ -2,7 +2,7 @@ import re
 
 from fastapi import Request
 
-from utils.crypto import Cryptography
+from app.utils.crypto import Cryptography
 
 
 class URLReplacer:

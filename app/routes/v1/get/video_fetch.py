@@ -10,11 +10,11 @@ import yt_dlp
 from fastapi import Request, HTTPException, Header
 from fastapi.responses import JSONResponse
 
-from models.error import HTTPError
-from routes.v1.router import router
+from app.models.error import HTTPError
+from app.routes.v1.router import router
 
-from utils.config import settings
-from utils.url_replacer import URLReplacer
+from app.utils.config import settings
+from app.utils.url_replacer import URLReplacer
 
 
 @router.get(
