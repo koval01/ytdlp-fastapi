@@ -1,20 +1,19 @@
 """
 Route handler for /v1/video/{video_id}
 """
-from __future__ import annotations
 
 import re
 from typing import Annotated
 
 import yt_dlp
-from fastapi import Request, HTTPException, Header
+from fastapi import Request, HTTPException, APIRouter, Header
 from fastapi.responses import JSONResponse
 
 from app.models.error import HTTPError
-from app.routes.v1.router import router
-
 from app.utils.config import settings
 from app.utils.url_replacer import URLReplacer
+
+router = APIRouter()
 
 
 @router.get(

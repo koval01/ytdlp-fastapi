@@ -6,8 +6,7 @@ from app.utils.config import settings
 
 from app.middleware import process_time_middleware
 
-from app.routes.get import healthz
-from app.routes.v1.get import playback, video_fetch
+from app.routes import router
 
 allowed_hosts = settings.ALLOWED_HOSTS.split(",")
 app = FastAPI(
@@ -29,9 +28,6 @@ app.add_middleware(
     TrustedHostMiddleware, allowed_hosts=allowed_hosts
 )
 
-app.include_router(video_fetch.router)
-app.include_router(playback.router)
-
-app.include_router(healthz.router)
+app.include_router(router)
 
 app.middleware("http")(process_time_middleware)

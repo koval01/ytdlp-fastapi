@@ -3,17 +3,16 @@ Route handler for /v1/playback/{playback_token}
 """
 
 from cryptography.fernet import InvalidToken
-from fastapi import Request, HTTPException
+from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
 from app.models.error import HTTPError
 from app.models.playback import Playback
-
-from app.routes.v1.router import router
-
 from app.utils.crypto import Cryptography
 from app.utils.range_request import RangeRequestHandler
+
+router = APIRouter()
 
 
 @router.get(
