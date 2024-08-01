@@ -1,28 +1,37 @@
-from typing import Literal
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-import yt_dlp
-import re
+from utils.config import settings
 
-app = FastAPI()
+from middleware import process_time_middleware
 
+from routes.get import healthz
+from routes.v1.get import video_fetch, playback
 
-@app.get("/{service}/{content_id}")
-def get(service: Literal["youtube", "twitch"], content_id: str):
-    services = {
-        "youtube": "www.youtube.com/watch?v=",
-        "twitch": "www.twitch.tv/"
-    }
-    with yt_dlp.YoutubeDL({}) as ydl:
-        try:
-            return ydl.extract_info(f"https://{services[service]}{content_id}", download=False)
-        except Exception as e:
-            error = re.search(r"\[.*?] (.+): (.+)", str(e))
-            return {"error": error.group(2), "id": error.group(1)}
+allowed_hosts = settings.ALLOWED_HOSTS.split(",")
+app = FastAPI(
+    title="YouTube Next Back-end",
+    description="Proxy for the unofficial YouTube client",
+    version="preview",
+    docs_url="/",
+    openapi_url=None if bool(settings.DISABLE_DOCS) else "/openapi.json"
+)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_hosts,
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["X-Secret"],
+)
+app.add_middleware(
+    TrustedHostMiddleware, allowed_hosts=allowed_hosts
+)
 
-@app.get("/healthz")
-def healthz():
-    yt_dlp.YoutubeDL({}).extract_info("https://www.youtube.com/watch?v=jNQXAC9IVRw", download=False)
-    return ""
+app.include_router(video_fetch.router)
+app.include_router(playback.router)
+
+app.include_router(healthz.router)
+
+app.middleware("http")(process_time_middleware)

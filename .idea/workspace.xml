@@ -5,41 +5,80 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fd8c3813-a41e-44ed-b187-c8d9cccefecf" name="Changes" comment="Release">
+      <change afterPath="$PROJECT_DIR$/.env.local" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/middleware/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/middleware/process_time.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/error.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/playback.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/get/healthz.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/v1/get/playback.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/v1/get/video_fetch.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/v1/router.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/crypto.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/range_request.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/url_replacer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ytdlp-fastapi.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ytdlp-fastapi.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "koval01"
+  }
+}]]></component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
-    "url": "https://github.com/koval01/ytdlp-fastapi.git",
+    "url": "https://github.com/koval01/ytdlp-fastapi",
     "accountId": "63703735-0362-498a-a5ba-12f685d25f6b"
   }
 }]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2jHfBLA0hfgh62wmlcUZesNSEk1" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
     "Python.main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+    "git-widget-placeholder": "main",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utils" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="ytdlp-fastapi" />
@@ -92,6 +131,7 @@
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Release" />
     <option name="LAST_COMMIT_MESSAGE" value="Release" />
   </component>
