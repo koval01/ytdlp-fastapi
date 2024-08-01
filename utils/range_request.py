@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Tuple
+from typing import AsyncGenerator
 
 import aiohttp
 
@@ -38,7 +38,7 @@ class RangeRequestHandler:
                     yield chunk
 
     @staticmethod
-    def _get_range_header(range_header: str, file_size: int) -> Tuple[int, int]:
+    def _get_range_header(range_header: str, file_size: int) -> tuple[int, int]:
         """
         Parse the range header to determine the byte range requested.
 

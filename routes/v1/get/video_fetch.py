@@ -4,7 +4,7 @@ Route handler for /v1/video/{video_id}
 from __future__ import annotations
 
 import re
-from typing import Annotated, Optional
+from typing import Annotated
 
 import yt_dlp
 from fastapi import Request, HTTPException, Header
@@ -27,7 +27,7 @@ from utils.url_replacer import URLReplacer
     },
     tags=["Video"]
 )
-def fetch(request: Request, video_id: str, x_secret: Annotated[Optional[str], Header()]) -> JSONResponse:
+def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Header()] = None) -> JSONResponse:
     """Request handler"""
     if x_secret != settings.SECRET_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")

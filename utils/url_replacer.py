@@ -1,5 +1,4 @@
 import re
-from typing import Union, Dict, List
 
 from fastapi import Request
 
@@ -36,7 +35,7 @@ class URLReplacer:
             return f"http://{self.request.url.netloc}/v1/playback/{_data}"
         return url
 
-    def _process_data(self, data: Union[Dict, List]) -> None:
+    def _process_data(self, data: dict | list) -> None:
         """
         Recursively searches through the data structure and replaces Google Video URLs.
 
@@ -56,7 +55,7 @@ class URLReplacer:
                 elif isinstance(item, str):
                     data[i] = self._replace_url(item)
 
-    def replace_urls(self, data: Union[Dict, List]) -> Union[Dict, List]:
+    def replace_urls(self, data: dict | list) -> dict | list:
         """
         Replaces all Google Video URLs in the given data structure with encrypted local URLs.
 
