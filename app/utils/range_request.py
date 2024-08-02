@@ -70,13 +70,12 @@ class RangeRequestHandler:
             raise _invalid_range()
         return start, end
 
-    async def range_requests_response(self, request: Request, content_type: str):
+    async def range_requests_response(self, request: Request):
         """
         Handle range requests and return a StreamingResponse with the appropriate byte range.
 
         Args:
             request (Request): The HTTP request object.
-            content_type (str): The content type of the response.
 
         Returns:
             StreamingResponse: The response object with the requested byte range.
@@ -84,16 +83,18 @@ class RangeRequestHandler:
         Raises:
             HTTPException: If the file is not found or other errors occur.
         """
+        resp_headers = {}
         async with aiohttp.ClientSession() as session:
             async with session.head(self.url) as response:
                 if response.status != 200:
                     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
                 file_size = int(response.headers.get("Content-Length", 0))
+                resp_headers = response.headers
 
         range_header = request.headers.get("range")
 
         headers = {
-            "content-type": content_type,
+            "content-type": resp_headers.get("content-type"),
             "accept-ranges": "bytes",
             "content-encoding": "identity",
             "content-length": str(file_size),

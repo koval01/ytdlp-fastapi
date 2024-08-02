@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Player</title>
+</head>
+<body style="margin: 0; background: #000; overscroll-behavior-y: none; height: 100vh">
+    <main class="height: 100vh">
+        <video id="videoPlayer" controls style="width: 100%; max-height: 100vh"></video>
+    </main>
+    <script>
+        const video_id = "{{ video_id }}";
+        const secret_key = "{{ secret_key }}";
+
+        fetch(`/v1/video/${video_id}`, {
+            method: 'GET',
+            headers: {
+                'X-Secret': secret_key
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            data = data.requested_formats;
+            const videoData = data.find(item => item.vcodec !== "none");
+            const audioData = data.find(item => item.acodec !== "none");
+
+            if (videoData && audioData) {
+                const videoUrl = videoData.url;
+                const audioUrl = audioData.url;
+
+                setupPlayer(videoUrl, audioUrl);
+            } else {
+                throw new Error('Video or audio data not found in the response');
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+
+        function setupPlayer(videoUrl, audioUrl) {
+            const videoElement = document.getElementById('videoPlayer');
+            const audioElement = new Audio(audioUrl);
+            audioElement.crossOrigin = 'anonymous'; // To avoid CORS issues
+
+            let videoLoaded = false;
+            let audioLoaded = false;
+
+            function startPlayback() {
+                if (videoLoaded && audioLoaded) {
+                    videoElement.play();
+                    audioElement.play();
+                }
+            }
+
+            videoElement.src = videoUrl;
+            videoElement.addEventListener('canplaythrough', () => {
+                videoLoaded = true;
+                startPlayback();
+            });
+
+            audioElement.addEventListener('canplaythrough', () => {
+                audioLoaded = true;
+                startPlayback();
+            });
+
+            videoElement.addEventListener('pause', () => {
+                if (!audioElement.paused) {
+                    audioElement.pause();
+                }
+            });
+
+            videoElement.addEventListener('play', () => {
+                if (audioElement.paused) {
+                    audioElement.play();
+                }
+            });
+
+            videoElement.addEventListener('seeking', () => {
+                audioElement.pause();
+            });
+
+            videoElement.addEventListener('seeked', () => {
+                // Wait until video starts playing before updating audio
+                const checkVideoReady = setInterval(() => {
+                    if (!videoElement.paused && videoElement.readyState >= 3) { // 3 is HAVE_FUTURE_DATA
+                        clearInterval(checkVideoReady);
+                        audioElement.currentTime = videoElement.currentTime;
+                        audioElement.play();
+                    }
+                }, 10);
+            });
+
+            videoElement.addEventListener('timeupdate', () => {
+                if (Math.abs(audioElement.currentTime - videoElement.currentTime) > 0.1) {
+                    audioElement.currentTime = videoElement.currentTime;
+                }
+            });
+
+            videoElement.addEventListener('volumechange', () => {
+                audioElement.volume = videoElement.volume;
+            });
+
+            videoElement.addEventListener('ratechange', () => {
+                audioElement.playbackRate = videoElement.playbackRate;
+            });
+
+            videoElement.addEventListener('loadedmetadata', () => {
+                audioElement.currentTime = videoElement.currentTime;
+            });
+
+            audioElement.addEventListener('error', (e) => {
+                console.error('Audio error:', e);
+            });
+        }
+    </script>
+</body>
+</html>

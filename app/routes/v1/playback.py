@@ -19,7 +19,10 @@ router = APIRouter()
     "/playback/{playback_token}",
     summary="Get media stream",
     responses={
-        200: {"content": {"video/mp4": {}}},
+        200: {"content": {
+            "video/mp4": {}, "audio/mp4": {},
+            "video/webm": {}, "audio/webm": {}
+        }},
         400: {"model": HTTPError},
         401: {"model": HTTPError},
         500: {"model": HTTPError}
@@ -43,4 +46,4 @@ async def playback(request: Request, playback_token: str) -> StreamingResponse:
 
     return await RangeRequestHandler(
         f"https://rr{data.host}.googlevideo.com/videoplayback?{data.query}"
-    ).range_requests_response(request, content_type="video/mp4")
+    ).range_requests_response(request)
