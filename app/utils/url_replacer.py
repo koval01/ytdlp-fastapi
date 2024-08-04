@@ -32,7 +32,7 @@ class URLReplacer:
                 'query': match.group('query'),
                 'client_host': self.request.client.host
             })
-            return f"http://{self.request.url.netloc}/v1/playback/{_data}"
+            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}"
         return url
 
     def _process_data(self, data: dict | list) -> None:

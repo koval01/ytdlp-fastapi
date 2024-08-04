@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
     "/demo/{video_id}",
     summary="Demo page",
     response_class=HTMLResponse,
-    tags=["Templates"]
+    tags=["Template"]
 )
 async def demo(request: Request, video_id: str) -> HTMLResponse:
     """Request handler"""

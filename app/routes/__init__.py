@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.utils.config import settings
-from . import templates, healthz, v1
+from . import templates, healthz, v1, image_proxy
 
 router = APIRouter()
 
@@ -10,3 +10,4 @@ if not bool(settings.DISABLE_DEMO):
 
 router.include_router(healthz.router)
 router.include_router(v1.router)
+router.include_router(image_proxy.router)

@@ -2,6 +2,8 @@
 Route handler for /v1/playback/{playback_token}
 """
 
+import re
+
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -24,7 +26,6 @@ router = APIRouter()
             "video/webm": {}, "audio/webm": {}
         }},
         400: {"model": HTTPError},
-        401: {"model": HTTPError},
         500: {"model": HTTPError}
     },
     tags=["Video"]
@@ -32,7 +33,7 @@ router = APIRouter()
 async def playback(request: Request, playback_token: str) -> StreamingResponse:
     """Request handler"""
     try:
-        data = Cryptography().decrypt_json(playback_token)
+        data = Cryptography().decrypt_json(re.sub(r'\.[a-zA-Z0-9]+$', '', playback_token))
     except InvalidToken:
         raise HTTPException(status_code=400, detail="Invalid media token")
 
@@ -42,7 +43,7 @@ async def playback(request: Request, playback_token: str) -> StreamingResponse:
         raise HTTPException(status_code=500, detail=str(e))
 
     if data.client_host != request.client.host:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=400, detail="Invalid media token")
 
     return await RangeRequestHandler(
         f"https://rr{data.host}.googlevideo.com/videoplayback?{data.query}"

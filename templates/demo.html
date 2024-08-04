@@ -2,121 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Demo Player</title>
+    <title>Custom Video Player</title>
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
-<body style="margin: 0; background: #000; overscroll-behavior-y: none; height: 100vh">
-    <main class="height: 100vh">
-        <video id="videoPlayer" controls style="width: 100%; max-height: 100vh"></video>
-    </main>
-    <script>
+<body>
+    <div id="videoPlayerContainer" style="width: 100vw"></div>
+    <script type="module">
+        import { VidstackPlayer, VidstackPlayerLayout } from 'https://cdn.vidstack.io/player';
+
         const video_id = "{{ video_id }}";
         const secret_key = "{{ secret_key }}";
 
-        fetch(`/v1/video/${video_id}`, {
-            method: 'GET',
-            headers: {
-                'X-Secret': secret_key
-            }
-        })
-        .then(response => {
+        const getMp4Videos = (data) => {
+          return data
+            .filter(item => item.ext === 'mp4' && item.protocol === 'https')
+            .map(item => ({
+              src: item.url + ".mp4",
+              type: 'video/mp4',
+              width: item.width,
+              height: item.height
+            }));
+        };
+
+        async function fetchMedia() {
+            const response = await fetch(`/v1/video/${video_id}`, {
+                method: 'GET',
+                headers: {
+                    'X-Secret': secret_key
+                }
+            });
+
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
             }
-            return response.json();
-        })
-        .then(data => {
-            data = data.requested_formats;
-            const videoData = data.find(item => item.vcodec !== "none");
-            const audioData = data.find(item => item.acodec !== "none");
+
+            const data = await response.json();
+            const videoData = getMp4Videos(data.formats);
+            const audioData = data.formats.find(item => item.acodec !== "none" && item.protocol === "https");
+            let storyboard = data.formats.find(item => item.format_id === "sb0" && item.format_note === "storyboard");
+            storyboard = encodeURIComponent("aa");
 
             if (videoData && audioData) {
-                const videoUrl = videoData.url;
-                const audioUrl = audioData.url;
-
-                setupPlayer(videoUrl, audioUrl);
+                return { title: data.title, videoUrls: videoData, audioUrl: audioData.url, thumbnailUrl: data.thumbnail, storyboard: storyboard };
             } else {
                 throw new Error('Video or audio data not found in the response');
             }
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-
-        function setupPlayer(videoUrl, audioUrl) {
-            const videoElement = document.getElementById('videoPlayer');
-            const audioElement = new Audio(audioUrl);
-            audioElement.crossOrigin = 'anonymous'; // To avoid CORS issues
-
-            let videoLoaded = false;
-            let audioLoaded = false;
-
-            function startPlayback() {
-                if (videoLoaded && audioLoaded) {
-                    videoElement.play();
-                    audioElement.play();
-                }
-            }
-
-            videoElement.src = videoUrl;
-            videoElement.addEventListener('canplaythrough', () => {
-                videoLoaded = true;
-                startPlayback();
-            });
-
-            audioElement.addEventListener('canplaythrough', () => {
-                audioLoaded = true;
-                startPlayback();
-            });
-
-            videoElement.addEventListener('pause', () => {
-                if (!audioElement.paused) {
-                    audioElement.pause();
-                }
-            });
-
-            videoElement.addEventListener('play', () => {
-                if (audioElement.paused) {
-                    audioElement.play();
-                }
-            });
-
-            videoElement.addEventListener('seeking', () => {
-                audioElement.pause();
-            });
-
-            videoElement.addEventListener('seeked', () => {
-                // Wait until video starts playing before updating audio
-                const checkVideoReady = setInterval(() => {
-                    if (!videoElement.paused && videoElement.readyState >= 3) { // 3 is HAVE_FUTURE_DATA
-                        clearInterval(checkVideoReady);
-                        audioElement.currentTime = videoElement.currentTime;
-                        audioElement.play();
-                    }
-                }, 10);
-            });
-
-            videoElement.addEventListener('timeupdate', () => {
-                if (Math.abs(audioElement.currentTime - videoElement.currentTime) > 0.1) {
-                    audioElement.currentTime = videoElement.currentTime;
-                }
-            });
-
-            videoElement.addEventListener('volumechange', () => {
-                audioElement.volume = videoElement.volume;
-            });
-
-            videoElement.addEventListener('ratechange', () => {
-                audioElement.playbackRate = videoElement.playbackRate;
-            });
-
-            videoElement.addEventListener('loadedmetadata', () => {
-                audioElement.currentTime = videoElement.currentTime;
-            });
-
-            audioElement.addEventListener('error', (e) => {
-                console.error('Audio error:', e);
-            });
         }
+
+        function setupPlayer(title, videoUrls, audioUrl, thumbnailUrl, storyboard) {
+            const player = VidstackPlayer.create({
+                target: '#videoPlayerContainer',
+                title: title,
+                viewType: 'video',
+                  streamType: 'on-demand',
+                  logLevel: 'warn',
+                  crossOrigin: true,
+                  playsInline: true,
+                src: videoUrls,
+                poster: thumbnailUrl,
+                layout: new VidstackPlayerLayout(),
+              });
+        }
+
+        fetchMedia()
+            .then(({ title, videoUrls, audioUrl, thumbnailUrl, storyboard }) => {
+                setupPlayer(title, videoUrls, audioUrl, thumbnailUrl, storyboard);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     </script>
 </body>
 </html>
