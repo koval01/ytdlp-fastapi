@@ -1,8 +1,12 @@
-"""
-Configuration settings for the application.
-"""
-
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
+import requests
+
+
+def fetch_cookies_data(url: str) -> str:
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    return response.text
 
 
 class Settings(BaseSettings):
@@ -11,9 +15,18 @@ class Settings(BaseSettings):
     SECRET_KEY: str = 'devsecretkey'
     DISABLE_DOCS: int = 0
     DISABLE_DEMO: int = 0
+    COOKIES_URL: str = 'https://gist.githubusercontent.com/username/hex/raw/hex/file.txt'
+    COOKIES: str = ''
 
     class Config:
         env_file = "./.env.local"
+
+    @field_validator('COOKIES')
+    def load_cookies(cls, _, values):
+        url = values.data["COOKIES_URL"]
+        if url:
+            return fetch_cookies_data(url)
+        raise ValueError("COOKIES_URL must be provided")
 
 
 settings = Settings()

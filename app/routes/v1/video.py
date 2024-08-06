@@ -57,7 +57,10 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
     if x_secret != settings.SECRET_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    with yt_dlp.YoutubeDL({'format': format_selector}) as ydl:
+    with yt_dlp.YoutubeDL({
+        'cookies': settings.COOKIES,
+        'format': format_selector
+    }) as ydl:
         try:
             resp = ydl.extract_info(
                 f"https://www.youtube.com/watch?v={video_id}",
