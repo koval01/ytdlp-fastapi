@@ -1,3 +1,4 @@
+import asyncio
 from typing import AsyncGenerator
 
 import aiohttp
@@ -32,10 +33,16 @@ class RangeRequestHandler:
                         detail=f"Invalid request range (Range: bytes={start}-{end})",
                     )
                 while True:
-                    chunk = await response.content.read(chunk_size)
-                    if not chunk:
-                        break
-                    yield chunk
+                    try:
+                        chunk = await response.content.read(chunk_size)
+                        if not chunk:
+                            break
+                        yield chunk
+                    except asyncio.TimeoutError as e:
+                        raise HTTPException(
+                            status.HTTP_503_SERVICE_UNAVAILABLE,
+                            detail=str(e),
+                        )
 
     @staticmethod
     def _get_range_header(range_header: str, file_size: int) -> tuple[int, int]:
