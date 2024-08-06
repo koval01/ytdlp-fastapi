@@ -11,8 +11,11 @@ class URLValidator:
 
     def __init__(self, request: Request):
         self.request = request
-        self.url_pattern = re.compile(
+        self.url_pattern_playback = re.compile(
             r"https://rr(?P<host>[^/]+)\.(?:googlevideo|c\.youtube)\.com/videoplayback\?(?P<query>.+)"
+        )
+        self.url_pattern_manifest = re.compile(
+            r"https://manifest\.googlevideo\.com/api/manifest/hls_(?:variant|playlist)/(?P<query>.+)"
         )
 
     def _replace_url(self, url: str) -> str:
@@ -25,13 +28,22 @@ class URLValidator:
         Returns:
             The encrypted local URL if the input URL matches the pattern, otherwise returns the original URL.
         """
-        match = self.url_pattern.search(url)
-        if match:
+        match_playback = self.url_pattern_playback.search(url)
+        if match_playback:
             _data = Cryptography().encrypt_json({
                 'url': url,
                 'client_host': self.request.client.host
             })
             return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}"
+
+        match_manifest = self.url_pattern_manifest.search(url)
+        if match_manifest:
+            _data = Cryptography().encrypt_json({
+                'url': url,
+                'client_host': self.request.client.host
+            })
+            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/manifest/{_data}"
+
         return url
 
     def _process_data(self, data: dict | list) -> None:
@@ -56,7 +68,8 @@ class URLValidator:
 
     def replace_urls(self, data: dict | list) -> dict | list:
         """
-        Replaces all video playback URLs in the given data structure with encrypted local URLs if they match the pattern.
+        Replaces all video playback URLs in the given data structure with encrypted local URLs
+        if they match the pattern.
 
         Args:
             data: The data structure to process. Can be a dictionary or a list.
