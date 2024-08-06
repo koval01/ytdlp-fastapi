@@ -42,7 +42,7 @@ class URLValidator:
                 'url': url,
                 'client_host': self.request.client.host
             })
-            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/manifest/{_data}"
+            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/manifest/hls/{_data}"
 
         return url
 
