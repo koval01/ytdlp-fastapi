@@ -1,35 +1,34 @@
 import re
-
 from fastapi import Request
-
 from app.utils.crypto import Cryptography
 
 
-class URLReplacer:
+class URLValidator:
     """
-    This class provides functionality to replace Google Video URLs in a given data structure
+    This class provides functionality to validate and replace specific video playback URLs in a given data structure
     with encrypted URLs pointing to a local playback endpoint.
     """
 
     def __init__(self, request: Request):
         self.request = request
-        self.url_pattern = re.compile(r"https://rr(?P<host>[^/]+)\.googlevideo\.com/videoplayback\?(?P<query>.+)")
+        self.url_pattern = re.compile(
+            r"https://rr(?P<host>[^/]+)\.(?:googlevideo|c\.youtube)\.com/videoplayback\?(?P<query>.+)"
+        )
 
     def _replace_url(self, url: str) -> str:
         """
-        Replaces a single Google Video URL with an encrypted local URL.
+        Replaces a single video playback URL with an encrypted local URL if it matches the pattern.
 
         Args:
-            url: The Google Video URL to replace.
+            url: The video playback URL to replace.
 
         Returns:
-            The encrypted local URL.
+            The encrypted local URL if the input URL matches the pattern, otherwise returns the original URL.
         """
         match = self.url_pattern.search(url)
         if match:
             _data = Cryptography().encrypt_json({
-                'host': match.group('host'),
-                'query': match.group('query'),
+                'url': url,
                 'client_host': self.request.client.host
             })
             return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}"
@@ -37,7 +36,7 @@ class URLReplacer:
 
     def _process_data(self, data: dict | list) -> None:
         """
-        Recursively searches through the data structure and replaces Google Video URLs.
+        Recursively searches through the data structure and replaces video playback URLs if they match the pattern.
 
         Args:
             data: The data structure to process. Can be a dictionary or a list.
@@ -57,13 +56,13 @@ class URLReplacer:
 
     def replace_urls(self, data: dict | list) -> dict | list:
         """
-        Replaces all Google Video URLs in the given data structure with encrypted local URLs.
+        Replaces all video playback URLs in the given data structure with encrypted local URLs if they match the pattern.
 
         Args:
             data: The data structure to process. Can be a dictionary or a list.
 
         Returns:
-            The data structure with the URLs replaced.
+            The data structure with the URLs replaced if matched.
         """
         self._process_data(data)
         return data

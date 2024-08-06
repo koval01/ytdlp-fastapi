@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 
 class RangeRequestHandler:
     def __init__(self, url: str):
-        self.url = url
+        self.url = str(url)
 
     async def fetch_video_data(self, start: int, end: int, chunk_size: int = 10_000) -> AsyncGenerator[bytes, None]:
         """

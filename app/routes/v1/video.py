@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from app.models.error import HTTPError
 
 from app.utils.config import settings
-from app.utils.url_replacer import URLReplacer
+from app.utils.url_replacer import URLValidator
 from app.utils.cookies import CookieConverter
 from app.utils.dlp_utils import DLPUtils
 
@@ -44,6 +44,6 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
                 f"https://www.youtube.com/watch?v={video_id}",
                 download=False
             )
-            return JSONResponse(URLReplacer(request).replace_urls(resp))
+            return JSONResponse(URLValidator(request).replace_urls(resp))
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
