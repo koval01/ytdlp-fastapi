@@ -9,6 +9,7 @@ from fastapi import Request, HTTPException, APIRouter, Header
 from fastapi.responses import JSONResponse
 
 from app.models.error import HTTPError
+from app.models.ytdlp import YouTubeResponse
 
 from app.utils.config import settings
 from app.utils.url_replacer import URLValidator
@@ -22,7 +23,7 @@ router = APIRouter()
     "/video/{video_id}",
     summary="Get video information",
     responses={
-        200: {"model": HTTPError},
+        200: {"model": YouTubeResponse},
         400: {"model": HTTPError},
         401: {"model": HTTPError}
     },
