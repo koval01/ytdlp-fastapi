@@ -45,7 +45,7 @@ async def image(request: Request, image_token: str) -> StreamingResponse:
 
     async with ClientSession() as session:
         try:
-            async with session.get(data.url) as response:
+            async with session.get(str(data.url)) as response:
                 response.raise_for_status()
                 image_data = BytesIO(await response.read())
                 return StreamingResponse(
