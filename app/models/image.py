@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl, IPvAnyAddress
 
 
 class Image(BaseModel):
-    url: str
-    client_host: str
+    url: HttpUrl
+    client_host: IPvAnyAddress

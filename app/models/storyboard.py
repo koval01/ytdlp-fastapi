@@ -1,9 +1,9 @@
-from pydantic import BaseModel, AnyUrl, confloat
+from pydantic import BaseModel, HttpUrl, confloat
 from typing import List
 
 
 class Fragment(BaseModel):
-    url: AnyUrl
+    url: HttpUrl
     duration: confloat(ge=0)
 
 
