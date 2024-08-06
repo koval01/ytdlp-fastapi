@@ -45,6 +45,9 @@ async def playback(request: Request, playback_token: str) -> StreamingResponse:
     if data.client_host != request.client.host:
         raise HTTPException(status_code=400, detail="Invalid media token")
 
-    return await RangeRequestHandler(
-        f"https://rr{data.host}.googlevideo.com/videoplayback?{data.query}"
-    ).range_requests_response(request)
+    try:
+        return await RangeRequestHandler(
+            f"https://rr{data.host}.googlevideo.com/videoplayback?{data.query}"
+        ).range_requests_response(request)
+    except HTTPException as e:
+        raise e
