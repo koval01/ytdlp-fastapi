@@ -94,7 +94,13 @@ class RangeRequestHandler:
         async with aiohttp.ClientSession() as session:
             async with session.head(self.url) as response:
                 if response.status != 200:
-                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={
+                        "message": "Content not found",
+                        "original_response": {
+                            "status": response.status,
+                            "content_length": response.content_length
+                        }
+                    })
                 file_size = int(response.headers.get("Content-Length", 0))
                 resp_headers = response.headers
 
