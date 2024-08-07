@@ -44,7 +44,7 @@ class AudioFormat(BaseModel):
     fps: Optional[int]
     audio_channels: int
     height: Optional[int]
-    quality: int
+    quality: int | float
     has_drm: bool
     tbr: float
     filesize_approx: int
