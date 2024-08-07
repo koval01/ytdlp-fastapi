@@ -34,8 +34,9 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     yt_dlp_options = {
+        'no_warnings': True,
+        'noprogress': True,
         'quiet': True,
-        'no-warnings': True,
         # since downloading cookies from a file, and even more so from a browser,
         # is problematic on hosting, so the following authorization method is used
         'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
