@@ -4,17 +4,17 @@ Route handler for /v1/manifest/hls/{manifest_token}
 
 import re
 
+from aiohttp import ClientSession
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import Response
 from pydantic import ValidationError
+from yarl import URL
 
-from app.models.error import HTTPError
 from app.models.crypto import CryptoObject
+from app.models.error import HTTPError
 from app.utils.crypto import Cryptography
 from app.utils.hls import HLSReplacer
-from aiohttp import ClientSession
-from yarl import URL
 
 router = APIRouter()
 

@@ -1,6 +1,8 @@
 import re
-from app.utils.crypto import Cryptography
+
 from fastapi import Request
+
+from app.utils.crypto import Cryptography
 
 
 class HLSReplacer:

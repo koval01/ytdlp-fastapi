@@ -1,6 +1,7 @@
-from pydantic_settings import BaseSettings
-from pydantic import field_validator
 import requests
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 
 
 def fetch_cookies_data(url: str) -> str:

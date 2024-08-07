@@ -2,10 +2,10 @@ import asyncio
 from typing import AsyncGenerator
 
 import aiohttp
-from yarl import URL
 
 from fastapi import HTTPException, Request, status
 from fastapi.responses import StreamingResponse
+from yarl import URL
 
 
 class RangeRequestHandler:

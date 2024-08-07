@@ -1,8 +1,8 @@
 from typing import List
+
 from fastapi import Request
 
 from app.models.storyboard import Fragment
-
 from app.utils.crypto import Cryptography
 
 

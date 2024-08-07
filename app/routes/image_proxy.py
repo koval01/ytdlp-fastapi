@@ -2,17 +2,18 @@
 Route handler for /image/{image_token}
 """
 
+from io import BytesIO
+
+from aiohttp import ClientSession
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
-
-from app.models.error import HTTPError
-from app.models.crypto import CryptoObject
-from app.utils.crypto import Cryptography
-from aiohttp import ClientSession
 from yarl import URL
-from io import BytesIO
+
+from app.models.crypto import CryptoObject
+from app.models.error import HTTPError
+from app.utils.crypto import Cryptography
 
 router = APIRouter()
 

@@ -9,8 +9,8 @@ from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
-from app.models.error import HTTPError
 from app.models.crypto import CryptoObject
+from app.models.error import HTTPError
 from app.utils.crypto import Cryptography
 from app.utils.range_request import RangeRequestHandler
 

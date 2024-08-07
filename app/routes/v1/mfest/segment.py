@@ -1,19 +1,21 @@
 """
 Route handler for /v1/manifest/segment/{segment_token}
 """
+
 import re
+from io import BytesIO
+
+from aiohttp import ClientSession, ClientResponseError
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
-
-from app.models.error import HTTPError
-from app.models.crypto import CryptoObject
-from app.utils.crypto import Cryptography
-from aiohttp import ClientSession, ClientResponseError
-from yarl import URL
-from io import BytesIO
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type, RetryError
+from yarl import URL
+
+from app.models.crypto import CryptoObject
+from app.models.error import HTTPError
+from app.utils.crypto import Cryptography
 
 router = APIRouter()
 

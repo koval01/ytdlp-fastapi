@@ -1,6 +1,5 @@
-from lxml import etree
-
 from fastapi import Request
+from lxml import etree
 
 from app.models.media import VideoFormat, AudioFormat
 from app.utils.crypto import Cryptography
