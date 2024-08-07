@@ -35,12 +35,12 @@ class YouTubeResponse(BaseModel):
     description: str
     channel_id: str
     channel_url: HttpUrl
-    duration: int
+    duration: Optional[int] = None
     view_count: int
     age_limit: int
     categories: List[str]
     tags: List[str]
-    comment_count: int
+    comment_count: Optional[int] = None
     like_count: int
     channel: str
     channel_follower_count: int
@@ -54,7 +54,7 @@ class YouTubeResponse(BaseModel):
     manifest_url: HttpUrl
     display_id: str
     fulltitle: str
-    duration_string: str
+    duration_string: Optional[str] = None
     is_live: bool
     was_live: bool
     epoch: int
