@@ -1,16 +1,20 @@
 from lxml import etree
 
+from fastapi import Request
+
 from app.models.media import VideoFormat, AudioFormat
+from app.utils.crypto import Cryptography
 
 
 class MPDGenerator:
-    def __init__(self, videos: list[VideoFormat], audios: list[AudioFormat]) -> None:
+    def __init__(self, request: Request, videos: list[VideoFormat], audios: list[AudioFormat]) -> None:
         """
         Initialize the MPDGenerator with lists of video and audio formats.
 
         :param videos: List of video format objects
         :param audios: List of audio format objects
         """
+        self.request = request
         self.videos = videos
         self.audios = audios
 
@@ -34,7 +38,12 @@ class MPDGenerator:
                 'frameRate': str(video.fps or 0)
             })
             base_url = etree.SubElement(representation, 'BaseURL')
-            base_url.text = video.url
+
+            _data = Cryptography().encrypt_json({
+                'url': str(video.url),
+                'client_host': self.request.client.host
+            })
+            base_url.text = f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}".encode()
 
     def _create_audio_adaptation_set(self, parent: etree.Element) -> None:
         """
@@ -55,7 +64,12 @@ class MPDGenerator:
                 'audioSamplingRate': str(audio.asr)
             })
             base_url = etree.SubElement(representation, 'BaseURL')
-            base_url.text = audio.url
+
+            _data = Cryptography().encrypt_json({
+                'url': str(audio.url),
+                'client_host': self.request.client.host
+            })
+            base_url.text = f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}".encode()
 
     def generate_mpd(self) -> str:
         """
