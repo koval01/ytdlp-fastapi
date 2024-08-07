@@ -9,3 +9,4 @@ tenacity~=9.0.0
 pydantic~=2.8.2
 lxml~=5.2.2
 yarl~=1.9.4
+m3u8~=6.0.0
