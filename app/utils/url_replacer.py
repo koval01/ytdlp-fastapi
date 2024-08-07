@@ -1,8 +1,7 @@
 import re
-
 from fastapi import Request
-
 from app.utils.crypto import Cryptography
+from app.utils.config import settings
 
 
 class URLValidator:
@@ -11,8 +10,9 @@ class URLValidator:
     with encrypted URLs pointing to a local playback endpoint.
     """
 
-    def __init__(self, request: Request):
+    def __init__(self, request: Request) -> None:
         self.request = request
+        self.hls_mode = bool(settings.HLS_MODE)
         self.url_pattern_playback = re.compile(
             r"https://rr(?P<host>[^/]+)\.(?:googlevideo|c\.youtube)\.com/videoplayback\?(?P<query>.+)"
         )
@@ -61,6 +61,17 @@ class URLValidator:
                     self._process_data(value)
                 elif isinstance(value, str):
                     data[key] = self._replace_url(value)
+            if self.hls_mode and 'formats' in data:
+                filtered_formats = [
+                    item for item in data['formats']
+                    if item['video_ext'] == "mp4" and item['protocol'] == "m3u8_native"
+                ]
+                if filtered_formats:
+                    last_format = filtered_formats[-1]
+                    manifest_url = last_format.get('manifest_url')
+                    if manifest_url:
+                        data['manifest_url'] = self._replace_url(manifest_url)
+                del data['formats']
         elif isinstance(data, list):
             for i, item in enumerate(data):
                 if isinstance(item, (dict, list)):

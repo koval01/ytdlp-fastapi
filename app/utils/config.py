@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     DISABLE_DEMO: int = 0
     COOKIES_URL: str = 'https://gist.githubusercontent.com/username/hex/raw/hex/file.txt'
     COOKIES: str = ''
+    HLS_MODE: int = 1
 
     class Config:
         env_file = "./.env.local"

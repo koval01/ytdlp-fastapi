@@ -51,10 +51,7 @@
             }
 
             const data = await response.json();
-            const streamsUrl = data.formats.filter(function (item) {
-                return item.video_ext === "mp4" && item.protocol === "m3u8_native"
-            });
-            const streamUrl = streamsUrl.at(-1)["manifest_url"] + ".m3u8";
+            const streamUrl = data.manifest_url + ".m3u8";
 
             if (streamUrl) {
                 return { title: data.title, uploader: data.uploader, streamUrl: streamUrl, thumbnailUrl: data.thumbnail, storyboard: null };

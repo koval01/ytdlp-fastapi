@@ -33,12 +33,17 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
     if x_secret != settings.SECRET_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    with yt_dlp.YoutubeDL({
-        'format': DLPUtils.format_selector,
+    yt_dlp_options = {
+        'quiet': True,
+        'no-warnings': True,
         # since downloading cookies from a file, and even more so from a browser,
         # is problematic on hosting, so the following authorization method is used
         'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
-    }) as ydl:
+    }
+    if not settings.HLS_MODE:
+        yt_dlp_options["format"] = DLPUtils.format_selector
+
+    with yt_dlp.YoutubeDL(yt_dlp_options) as ydl:
         try:
             resp = ydl.extract_info(
                 f"https://www.youtube.com/watch?v={video_id}",
