@@ -2,6 +2,7 @@ import asyncio
 from typing import AsyncGenerator
 
 import aiohttp
+from yarl import URL
 
 from fastapi import HTTPException, Request, status
 from fastapi.responses import StreamingResponse
@@ -26,7 +27,7 @@ class RangeRequestHandler:
         headers = {"Range": f"bytes={start}-{end}"}
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.url, headers=headers) as response:
+            async with session.get(URL(self.url, encoded=True), headers=headers) as response:
                 if response.status == 416:
                     raise HTTPException(
                         status.HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE,
@@ -92,9 +93,9 @@ class RangeRequestHandler:
         """
         resp_headers = {}
         async with aiohttp.ClientSession() as session:
-            async with session.head(self.url) as response:
+            async with session.head(URL(self.url, encoded=True)) as response:
                 if response.status != 200:
-                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={
+                    raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail={
                         "message": "Content not found",
                         "original_response": {
                             "status": response.status,

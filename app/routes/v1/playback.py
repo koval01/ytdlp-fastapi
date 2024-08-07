@@ -10,7 +10,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
 from app.models.error import HTTPError
-from app.models.playback import Playback
+from app.models.crypto import CryptoObject
 from app.utils.crypto import Cryptography
 from app.utils.range_request import RangeRequestHandler
 
@@ -38,7 +38,7 @@ async def playback(request: Request, playback_token: str) -> StreamingResponse:
         raise HTTPException(status_code=400, detail="Invalid media token")
 
     try:
-        data = Playback(**data)
+        data = CryptoObject(**data)
     except ValidationError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

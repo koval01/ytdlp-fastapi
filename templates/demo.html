@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Custom Video Player</title>
+    <title>Demo Video Player</title>
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
     <style>
@@ -16,24 +17,22 @@
         }
     </style>
 </head>
+
 <body>
     <div id="videoPlayerContainer" style="width: 100vw"></div>
+    <script>
+        (function () {
+            const script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/eruda";
+            document.body.append(script);
+            script.onload = function () { eruda.init(); }
+        })();
+    </script>
     <script type="module">
         import { VidstackPlayer, VidstackPlayerLayout } from 'https://cdn.vidstack.io/player';
 
         const video_id = "{{ video_id }}";
         const secret_key = "{{ secret_key }}";
-
-        const getMp4Videos = (data) => {
-          return data
-            .filter(item => item.ext === 'mp4' && item.protocol === 'https')
-            .map(item => ({
-              src: item.url + ".mp4",
-              type: 'video/mp4',
-              width: item.width,
-              height: item.height
-            }));
-        };
 
         async function fetchMedia() {
             const response = await fetch(`/v1/video/${video_id}`, {
@@ -48,40 +47,38 @@
             }
 
             const data = await response.json();
-            const videoData = getMp4Videos(data.formats);
-            const audioData = data.formats.find(item => item.acodec !== "none" && item.protocol === "https");
-            let storyboard = data.formats.find(item => item.format_id === "sb0" && item.format_note === "storyboard");
-            storyboard = encodeURIComponent("aa");
+            const streamsUrl = data.formats.filter(function (item) {
+                return item.video_ext === "mp4" && item.protocol === "m3u8_native"
+            });
+            const streamUrl = streamsUrl.at(-1)["manifest_url"] + ".m3u8";
 
-            if (videoData && audioData) {
-                return { title: data.title, videoUrls: videoData, audioUrl: audioData.url, thumbnailUrl: data.thumbnail, storyboard: storyboard };
+            if (streamUrl) {
+                return { title: data.title, streamUrl: streamUrl, thumbnailUrl: data.thumbnail, storyboard: null };
             } else {
                 throw new Error('Video or audio data not found in the response');
             }
         }
 
-        function setupPlayer(title, videoUrls, audioUrl, thumbnailUrl, storyboard) {
+        function setupPlayer(title, streamUrl, thumbnailUrl, storyboard) {
             const player = VidstackPlayer.create({
                 target: '#videoPlayerContainer',
                 title: title,
-                viewType: 'video',
-                  streamType: 'on-demand',
-                  logLevel: 'warn',
-                  crossOrigin: true,
-                  playsInline: true,
-                src: videoUrls,
+                src: streamUrl,
                 poster: thumbnailUrl,
-                layout: new VidstackPlayerLayout(),
-              });
+                layout: new VidstackPlayerLayout({
+                    // thumbnails: storyboard,
+                }),
+            });
         }
 
         fetchMedia()
-            .then(({ title, videoUrls, audioUrl, thumbnailUrl, storyboard }) => {
-                setupPlayer(title, videoUrls, audioUrl, thumbnailUrl, storyboard);
+            .then(({ title, streamUrl, thumbnailUrl, storyboard }) => {
+                setupPlayer(title, streamUrl, thumbnailUrl, storyboard);
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
     </script>
 </body>
+
 </html>

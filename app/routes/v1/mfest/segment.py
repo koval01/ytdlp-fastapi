@@ -1,6 +1,7 @@
 """
-Route handler for /image/{image_token}
+Route handler for /v1/manifest/segment/{segment_token}
 """
+import re
 
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
@@ -18,23 +19,23 @@ router = APIRouter()
 
 
 @router.get(
-    "/image/{image_token}",
-    summary="Get image from Google network",
+    "/segment/{segment_token}",
+    summary="Get video segment (HLS stream)",
     responses={
         200: {"content": {
-            "image/webp": {}
+            "application/octet-stream": {}
         }},
         400: {"model": HTTPError},
         500: {"model": HTTPError}
     },
     tags=["Util"]
 )
-async def image(request: Request, image_token: str) -> StreamingResponse:
+async def segment(request: Request, segment_token: str) -> StreamingResponse:
     """Request handler"""
     try:
-        data = Cryptography().decrypt_json(image_token)
+        data = Cryptography().decrypt_json(re.sub(r'\.[a-zA-Z0-9]+$', '', segment_token))
     except InvalidToken:
-        raise HTTPException(status_code=400, detail="Invalid image token")
+        raise HTTPException(status_code=400, detail="Invalid segment token")
 
     try:
         data = CryptoObject(**data)
@@ -42,16 +43,16 @@ async def image(request: Request, image_token: str) -> StreamingResponse:
         raise HTTPException(status_code=500, detail=str(e))
 
     if str(data.client_host) != request.client.host:
-        raise HTTPException(status_code=400, detail="Invalid image token")
+        raise HTTPException(status_code=400, detail="Invalid segment token")
 
     async with ClientSession() as session:
         try:
             async with session.get(URL(str(data.url), encoded=True)) as response:
                 response.raise_for_status()
-                image_data = BytesIO(await response.read())
+                segment_data = BytesIO(await response.read())
                 return StreamingResponse(
-                    image_data,
-                    media_type=response.headers.get('Content-Type', 'image/jpeg')
+                    segment_data,
+                    media_type=response.headers.get('Content-Type', 'application/octet-stream')
                 )
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
