@@ -15,11 +15,15 @@
             justify-content: center;
             align-items: center;
         }
+
+        body {
+            overscroll-behavior-y: none;
+        }
     </style>
 </head>
 
 <body>
-    <div id="videoPlayerContainer" style="width: 100vw"></div>
+    <div id="videoPlayerContainer" style="width: 100%; max-height: 100vh"></div>
     <script>
         (function () {
             const script = document.createElement('script');
@@ -53,7 +57,7 @@
             const streamUrl = streamsUrl.at(-1)["manifest_url"] + ".m3u8";
 
             if (streamUrl) {
-                return { title: data.title, streamUrl: streamUrl, thumbnailUrl: data.thumbnail, storyboard: null };
+                return { title: data.title, uploader: data.uploader, streamUrl: streamUrl, thumbnailUrl: data.thumbnail, storyboard: null };
             } else {
                 throw new Error('Video or audio data not found in the response');
             }
@@ -72,8 +76,10 @@
         }
 
         fetchMedia()
-            .then(({ title, streamUrl, thumbnailUrl, storyboard }) => {
+            .then(({ title, uploader, streamUrl, thumbnailUrl, storyboard }) => {
                 setupPlayer(title, streamUrl, thumbnailUrl, storyboard);
+
+                document.title = `${title} - ${uploader}`;
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
