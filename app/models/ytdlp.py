@@ -44,7 +44,7 @@ class YouTubeResponse(BaseModel):
     like_count: int
     channel: str
     channel_follower_count: int
-    channel_is_verified: bool
+    channel_is_verified: Optional[bool] = False
     uploader: str
     uploader_id: str
     uploader_url: HttpUrl
