@@ -1,7 +1,10 @@
 import re
+
 from fastapi import Request
-from app.utils.crypto import Cryptography
+
+from app.models.ytdlp import YouTubeResponse
 from app.utils.config import settings
+from app.utils.crypto import Cryptography
 
 
 class URLValidator:
@@ -79,7 +82,7 @@ class URLValidator:
                 elif isinstance(item, str):
                     data[i] = self._replace_url(item)
 
-    def replace_urls(self, data: dict | list) -> dict | list:
+    def replace_urls(self, data: dict | list) -> YouTubeResponse:
         """
         Replaces all video playback URLs in the given data structure with encrypted local URLs
         if they match the pattern.
@@ -91,4 +94,4 @@ class URLValidator:
             The data structure with the URLs replaced if matched.
         """
         self._process_data(data)
-        return data
+        return YouTubeResponse(**data)

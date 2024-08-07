@@ -6,6 +6,7 @@ from typing import Annotated
 
 import yt_dlp
 from fastapi import Request, HTTPException, APIRouter, Header
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from app.models.error import HTTPError
@@ -50,6 +51,9 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
                 f"https://www.youtube.com/watch?v={video_id}",
                 download=False
             )
-            return JSONResponse(URLValidator(request).replace_urls(resp))
+            _validator = URLValidator(request)
+            return JSONResponse(
+                content=jsonable_encoder(_validator.replace_urls(resp).model_dump())
+            )
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

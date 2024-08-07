@@ -1,5 +1,6 @@
-from pydantic import BaseModel, HttpUrl, confloat
 from typing import List
+
+from pydantic import BaseModel, HttpUrl, confloat
 
 
 class Fragment(BaseModel):

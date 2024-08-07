@@ -3,7 +3,6 @@ Middleware for add X-Process-Time header
 """
 
 import time
-
 from typing import Callable
 
 from fastapi import Request, Response
