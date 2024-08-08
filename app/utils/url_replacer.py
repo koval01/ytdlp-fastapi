@@ -21,7 +21,8 @@ class URLValidator:
             r"https://rr(?P<host>[^/]+)\.(?:googlevideo|c\.youtube)\.com/videoplayback\?(?P<query>.+)"
         )
         self.url_pattern_manifest = re.compile(
-            r"https://manifest\.googlevideo\.com/api/manifest/hls_(?:variant|playlist)/(?P<query>.+)"
+            r"https://(?:manifest\.googlevideo\.com|www\.youtube\.com)"
+            r"/api/manifest/hls_(?:variant|playlist)/(?P<query>.+)"
         )
         self.crypto = Cryptography()
 
