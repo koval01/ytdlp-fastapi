@@ -3,6 +3,7 @@ from lxml import etree
 
 from app.models.media import VideoFormat, AudioFormat
 from app.utils.crypto import Cryptography
+from app.utils.filter import Filter
 
 
 class MPDGenerator:
@@ -42,7 +43,7 @@ class MPDGenerator:
                 'url': str(video.url),
                 'client_host': self.request.client.host
             })
-            base_url.text = f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}".encode()
+            base_url.text = f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/playback/{_data}".encode()
 
     def _create_audio_adaptation_set(self, parent: etree.Element) -> None:
         """
@@ -68,7 +69,7 @@ class MPDGenerator:
                 'url': str(audio.url),
                 'client_host': self.request.client.host
             })
-            base_url.text = f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}".encode()
+            base_url.text = f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/playback/{_data}".encode()
 
     def generate_mpd(self) -> str:
         """

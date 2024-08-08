@@ -4,6 +4,7 @@ from fastapi import Request
 
 from app.models.storyboard import Fragment
 from app.utils.crypto import Cryptography
+from app.utils.filter import Filter
 
 
 class VTTConverter:
@@ -58,7 +59,7 @@ class VTTConverter:
                 'url': str(fragment.url),
                 'client_host': self.request.client.host
             })
-            url = f"{self.request.url.scheme}://{self.request.url.netloc}/image/{_data}"
+            url = f"{Filter.scheme(self.request)}://{self.request.url.netloc}/image/{_data}"
             start_time = self.seconds_to_timestamp(current_time)
             end_time = self.seconds_to_timestamp(current_time + fragment.duration)
             vtt_content += f"{i + 1}\n"

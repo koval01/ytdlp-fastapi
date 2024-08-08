@@ -1,6 +1,8 @@
 import m3u8
 from fastapi import Request
+
 from app.utils.crypto import Cryptography
+from app.utils.filter import Filter
 
 
 class HLSReplacer:
@@ -18,9 +20,9 @@ class HLSReplacer:
 
             # Construct the new URL based on the type
             if 'hls_playlist' in url:
-                new_url = f"{request.url.scheme}://{request.url.netloc}/v1/manifest/hls/{_data}.m3u8"
+                new_url = f"{Filter.scheme(request)}://{request.url.netloc}/v1/manifest/hls/{_data}.m3u8"
             else:
-                new_url = f"{request.url.scheme}://{request.url.netloc}/v1/manifest/segment/{_data}.ts"
+                new_url = f"{Filter.scheme(request)}://{request.url.netloc}/v1/manifest/segment/{_data}.ts"
 
             return new_url
 

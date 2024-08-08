@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     COOKIES_URL: str = 'https://gist.githubusercontent.com/username/hex/raw/hex/file.txt'
     COOKIES: str = ''
     HLS_MODE: int = 1
+    OVERWRITE_SCHEME: str | None = None  # string like http / https
 
     class Config:
         env_file = "./.env.local"

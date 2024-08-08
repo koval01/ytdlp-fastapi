@@ -5,6 +5,7 @@ from fastapi import Request
 from app.models.ytdlp import YouTubeResponse
 from app.utils.config import settings
 from app.utils.crypto import Cryptography
+from app.utils.filter import Filter
 
 
 class URLValidator:
@@ -40,7 +41,7 @@ class URLValidator:
                 'url': url,
                 'client_host': self.request.client.host
             })
-            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}"
+            return f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/playback/{_data}"
 
         match_manifest = self.url_pattern_manifest.search(url)
         if match_manifest:
@@ -48,7 +49,7 @@ class URLValidator:
                 'url': url,
                 'client_host': self.request.client.host
             })
-            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/manifest/hls/{_data}"
+            return f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/manifest/hls/{_data}"
 
         return url
 
