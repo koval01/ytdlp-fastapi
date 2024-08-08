@@ -21,13 +21,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const streamUrl = data.manifest_url + ".m3u8";
 
         if (streamUrl) {
-            return { title: data.title, uploader: data.uploader, streamUrl: streamUrl, thumbnailUrl: data.thumbnail, storyboard: null };
+            return {
+                title: data.title,
+                description: data.description,
+                uploader: data.uploader,
+                streamUrl: streamUrl,
+                thumbnailUrl: data.thumbnail,
+                storyboard: null
+            };
         } else {
             throw new Error('Video or audio data not found in the response');
         }
     }
 
-    function setupPlayer(title, streamUrl, thumbnailUrl, storyboard) {
+    function setupPlayer(title, description, streamUrl, thumbnailUrl, storyboard) {
         const player = VidstackPlayer.create({
             target: '#videoPlayerContainer',
             title: title,
@@ -43,11 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update video title in video-info section
         const videoTitleElement = document.querySelector('.video-info h2');
         videoTitleElement.textContent = title;
+
+        // Update video description
+        const videoDescriptionElement = document.querySelector('.video-info p');
+        videoDescriptionElement.innerHTML = description.replaceAll(/\n/g, "<br />");
     }
 
     fetchMedia()
-        .then(({ title, uploader, streamUrl, thumbnailUrl, storyboard }) => {
-            setupPlayer(title, streamUrl, thumbnailUrl, storyboard);
+        .then(({ title, description, uploader, streamUrl, thumbnailUrl, storyboard }) => {
+            setupPlayer(title, description, streamUrl, thumbnailUrl, storyboard);
 
             document.title = `${title} - ${uploader}`;
         })
