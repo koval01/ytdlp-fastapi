@@ -41,7 +41,7 @@ class RangeRequestHandler:
                     except asyncio.TimeoutError as e:
                         raise HTTPException(
                             status.HTTP_503_SERVICE_UNAVAILABLE,
-                            detail=str(e),
+                            detail=e.__name__,
                         )
 
     @staticmethod

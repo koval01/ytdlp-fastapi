@@ -40,7 +40,7 @@ async def image(request: Request, image_token: str) -> StreamingResponse:
     try:
         data = CryptoObject(**data)
     except ValidationError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=e.__name__)
 
     if str(data.client_host) != request.client.host:
         raise HTTPException(status_code=400, detail="Invalid image token")
@@ -55,4 +55,4 @@ async def image(request: Request, image_token: str) -> StreamingResponse:
                     media_type=response.headers.get('Content-Type', 'image/jpeg')
                 )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=e.__name__)

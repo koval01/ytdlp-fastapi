@@ -41,7 +41,7 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
     try:
         data = CryptoObject(**data)
     except ValidationError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+        raise HTTPException(status_code=503, detail=e.__name__)
 
     if str(data.client_host) != request.client.host:
         raise HTTPException(status_code=400, detail="Invalid manifest token")
@@ -56,4 +56,4 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
                     media_type=response.headers.get('Content-Type', 'application/vnd.apple.mpegurl')
                 )
         except Exception as e:
-            raise HTTPException(status_code=503, detail=str(e))
+            raise HTTPException(status_code=503, detail=e.__name__)

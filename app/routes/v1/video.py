@@ -56,4 +56,4 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
                 content=jsonable_encoder(_validator.replace_urls(resp).model_dump())
             )
         except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=400, detail=e.__name__)

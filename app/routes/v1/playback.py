@@ -40,7 +40,7 @@ async def playback(request: Request, playback_token: str) -> StreamingResponse:
     try:
         data = CryptoObject(**data)
     except ValidationError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=e.__name__)
 
     if str(data.client_host) != request.client.host:
         raise HTTPException(status_code=400, detail="Invalid media token")
