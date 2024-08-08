@@ -7,6 +7,10 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
+COPY ./static /code/static
 COPY ./templates /code/templates
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
+RUN export WORKERS=$(nproc) && \
+    echo "Number of workers set to: $WORKERS"
+
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT --loop uvloop --http h11 --workers $WORKERS"]
