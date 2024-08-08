@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.middleware.process_time import ProcessTimeMiddleware
 from app.middleware.referer import RefererCheckMiddleware
+from app.middleware.node import NodeMiddleware
 from app.routes import router
 from app.utils.config import settings
 
@@ -30,6 +31,8 @@ app.add_middleware(
     TrustedHostMiddleware,  # type: ignore[no-untyped-call]
     allowed_hosts=allowed_hosts
 )
+
+app.add_middleware(NodeMiddleware)  # type: ignore[no-untyped-call]
 app.add_middleware(ProcessTimeMiddleware)  # type: ignore[no-untyped-call]
 app.add_middleware(RefererCheckMiddleware)  # type: ignore[no-untyped-call]
 
