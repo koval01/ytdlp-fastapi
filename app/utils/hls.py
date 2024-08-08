@@ -7,10 +7,11 @@ class HLSReplacer:
     @staticmethod
     def replace_manifest_links(manifest_content, request: Request) -> str:
         playlist = m3u8.loads(manifest_content)
+        cryptography = Cryptography()
 
         # Function to replace URLs in the playlist
         def replace_url(url):
-            _data = Cryptography().encrypt_json({
+            _data = cryptography.encrypt_json({
                 'url': url,
                 'client_host': request.client.host
             })
@@ -39,31 +40,27 @@ class HLSReplacer:
             for media in playlist.media:
                 media.uri = replace_url(media.uri)
 
-        i = 0
+        # Optimize resolution groups replacement
         resolution_groups = {}
+        i = 0
         while i < len(playlist.playlists):
             p = playlist.playlists[i]
             if 'vp09' not in p.stream_info.codecs:
-                del playlist.playlists[i]  # Remove the item if 'vp09' is not in the codecs
-                # Do not increment i because the next item now occupies the current index
+                del playlist.playlists[i]
+                continue  # Skip incrementing i to check the next item at the same index
+            resolution = p.stream_info.resolution
+            if resolution not in resolution_groups:
+                resolution_groups[resolution] = p
+                p.uri = replace_url(p.uri)
+                i += 1
             else:
-                resolution = p.stream_info.resolution
-                if resolution not in resolution_groups:
+                existing_playlist = resolution_groups[resolution]
+                if p.stream_info.bandwidth > existing_playlist.stream_info.bandwidth:
                     resolution_groups[resolution] = p
-                    p.uri = replace_url(p.uri)  # Update the URI if the item is kept
-                    i += 1  # Move to the next item if the current item was kept
+                    p.uri = replace_url(p.uri)
+                    del playlist.playlists[i]
                 else:
-                    # Compare and keep the one with the higher bandwidth
-                    existing_playlist = resolution_groups[resolution]
-                    if p.stream_info.bandwidth > existing_playlist.stream_info.bandwidth:
-                        # Replace the existing playlist with the new one
-                        resolution_groups[resolution] = p
-                        p.uri = replace_url(p.uri)  # Update the URI if the item is kept
-                        del playlist.playlists[i]  # Remove the old playlist with lower bandwidth
-                        # Do not increment i because the next item now occupies the current index
-                    else:
-                        del playlist.playlists[i]  # Remove the item if it has lower bandwidth
-                        # Do not increment i because the next item now occupies the current index
+                    del playlist.playlists[i]
 
         # Return the updated manifest content
         updated_manifest = playlist.dumps()

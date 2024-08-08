@@ -22,6 +22,7 @@ class URLValidator:
         self.url_pattern_manifest = re.compile(
             r"https://manifest\.googlevideo\.com/api/manifest/hls_(?:variant|playlist)/(?P<query>.+)"
         )
+        self.crypto = Cryptography()
 
     def _replace_url(self, url: str) -> str:
         """
@@ -35,7 +36,7 @@ class URLValidator:
         """
         match_playback = self.url_pattern_playback.search(url)
         if match_playback:
-            _data = Cryptography().encrypt_json({
+            _data = self.crypto.encrypt_json({
                 'url': url,
                 'client_host': self.request.client.host
             })
@@ -43,7 +44,7 @@ class URLValidator:
 
         match_manifest = self.url_pattern_manifest.search(url)
         if match_manifest:
-            _data = Cryptography().encrypt_json({
+            _data = self.crypto.encrypt_json({
                 'url': url,
                 'client_host': self.request.client.host
             })
@@ -60,10 +61,10 @@ class URLValidator:
         """
         if isinstance(data, dict):
             for key, value in data.items():
-                if isinstance(value, (dict, list)):
-                    self._process_data(value)
-                elif isinstance(value, str):
+                if isinstance(value, str):
                     data[key] = self._replace_url(value)
+                elif isinstance(value, (dict, list)):
+                    self._process_data(value)
             if self.hls_mode and 'formats' in data:
                 filtered_formats = [
                     item for item in data['formats']
@@ -77,10 +78,10 @@ class URLValidator:
                 del data['formats']
         elif isinstance(data, list):
             for i, item in enumerate(data):
-                if isinstance(item, (dict, list)):
-                    self._process_data(item)
-                elif isinstance(item, str):
+                if isinstance(item, str):
                     data[i] = self._replace_url(item)
+                elif isinstance(item, (dict, list)):
+                    self._process_data(item)
 
     def replace_urls(self, data: dict | list) -> YouTubeResponse:
         """

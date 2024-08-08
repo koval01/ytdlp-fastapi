@@ -3,7 +3,6 @@ Route handler for /v1/video/{video_id}
 """
 
 import asyncio
-from typing import Annotated, Dict, Any
 
 import yt_dlp
 from fastapi import Request, HTTPException, APIRouter, Header
@@ -19,20 +18,16 @@ from app.utils.url_replacer import URLValidator
 
 router = APIRouter()
 
+yt_dlp_options = {
+    'no_warnings': True,
+    'noprogress': True,
+    'quiet': True,
+    'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
+}
+if not settings.HLS_MODE:
+    yt_dlp_options["format"] = DLPUtils.format_selector
 
-async def extract_info_async(ydl: yt_dlp.YoutubeDL, video_url: str) -> Dict[str, Any]:
-    """
-    Asynchronously extract information from a YouTube video URL using yt_dlp.
-
-    Args:
-        ydl (yt_dlp.YoutubeDL): An instance of the yt_dlp.YoutubeDL class.
-        video_url (str): The URL of the YouTube video.
-
-    Returns:
-        Dict[str, Any]: A dictionary containing the extracted video information.
-    """
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, ydl.extract_info, video_url, False)
+loop = asyncio.get_event_loop()
 
 
 @router.get(
@@ -45,23 +40,14 @@ async def extract_info_async(ydl: yt_dlp.YoutubeDL, video_url: str) -> Dict[str,
     },
     tags=["Video"]
 )
-async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Header()] = None) -> JSONResponse:
+async def fetch(request: Request, video_id: str, x_secret: str | None = Header(None)) -> JSONResponse:
     """Request handler"""
     if x_secret != settings.SECRET_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    yt_dlp_options = {
-        'no_warnings': True,
-        'noprogress': True,
-        'quiet': True,
-        'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
-    }
-    if not settings.HLS_MODE:
-        yt_dlp_options["format"] = DLPUtils.format_selector
-
     with yt_dlp.YoutubeDL(yt_dlp_options) as ydl:
         try:
-            resp = await extract_info_async(ydl, f"https://www.youtube.com/watch?v={video_id}")
+            resp = await loop.run_in_executor(None, ydl.extract_info, f"https://www.youtube.com/watch?v={video_id}", False)
             _validator = URLValidator(request)
             return JSONResponse(
                 content=jsonable_encoder(_validator.replace_urls(resp).model_dump())
