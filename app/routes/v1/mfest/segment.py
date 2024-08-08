@@ -48,7 +48,7 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
         async with ClientSession() as session:
             try:
                 async with session.get(URL(str(data.url), encoded=True)) as resp:
-                    async for chunk in resp.content.iter_chunked(1024):
+                    async for chunk in resp.content.iter_chunked(16 * 1024):
                         yield chunk
             except ClientResponseError as _e:
                 raise HTTPException(status_code=500, detail=str(_e))
