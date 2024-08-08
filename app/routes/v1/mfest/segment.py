@@ -16,7 +16,6 @@ router = APIRouter()
 
 SEGMENT_TOKEN_PATTERN = re.compile(r'\.[a-zA-Z0-9]+$')
 cryptography = Cryptography()
-session = ClientSession()
 
 
 @router.get(
@@ -46,11 +45,12 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
         raise HTTPException(status_code=400, detail="Invalid segment token")
 
     async def stream_video() -> AsyncIterable[bytes]:
-        try:
-            async with session.get(URL(str(data.url), encoded=True)) as resp:
-                async for chunk in resp.content.iter_chunked(1024):
-                    yield chunk
-        except ClientResponseError as _e:
-            raise HTTPException(status_code=500, detail=str(_e))
+        async with ClientSession() as session:
+            try:
+                async with session.get(URL(str(data.url), encoded=True)) as resp:
+                    async for chunk in resp.content.iter_chunked(1024):
+                        yield chunk
+            except ClientResponseError as _e:
+                raise HTTPException(status_code=500, detail=str(_e))
 
     return StreamingResponse(content=stream_video(), media_type="application/octet-stream")

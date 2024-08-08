@@ -16,7 +16,6 @@ router = APIRouter()
 
 MANIFEST_TOKEN_PATTERN = re.compile(r'\.[a-zA-Z0-9]+$')
 cryptography = Cryptography()
-session = ClientSession()
 
 
 @router.get(
@@ -47,13 +46,14 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
     if str(data.client_host) != request.client.host:
         raise HTTPException(status_code=400, detail="Invalid manifest token")
 
-    try:
-        async with session.get(URL(str(data.url), encoded=True)) as response:
-            response.raise_for_status()
-            resp = await response.text()
-            return Response(
-                HLSReplacer.replace_manifest_links(resp, request),
-                media_type=response.headers.get('Content-Type', 'application/vnd.apple.mpegurl')
-            )
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    async with ClientSession() as session:
+        try:
+            async with session.get(URL(str(data.url), encoded=True)) as response:
+                response.raise_for_status()
+                resp = await response.text()
+                return Response(
+                    HLSReplacer.replace_manifest_links(resp, request),
+                    media_type=response.headers.get('Content-Type', 'application/vnd.apple.mpegurl')
+                )
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=str(e))
