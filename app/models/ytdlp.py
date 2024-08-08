@@ -43,7 +43,7 @@ class YouTubeResponse(BaseModel):
     comment_count: Optional[int] = None
     like_count: int
     channel: str
-    channel_follower_count: int
+    channel_follower_count: Optional[int] = None
     channel_is_verified: Optional[bool] = False
     uploader: str
     uploader_id: str
