@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.staticfiles import StaticFiles
 
-from app.middleware import process_time_middleware
+from app.middleware.process_time import ProcessTimeMiddleware
+from app.middleware.referer import RefererCheckMiddleware
 from app.routes import router
 from app.utils.config import settings
 
@@ -19,16 +20,17 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
-    CORSMiddleware,
+    CORSMiddleware,  # type: ignore[no-untyped-call]
     allow_origins=allowed_hosts,
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["X-Secret"],
 )
 app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=allowed_hosts
+    TrustedHostMiddleware,  # type: ignore[no-untyped-call]
+    allowed_hosts=allowed_hosts
 )
+app.add_middleware(ProcessTimeMiddleware)  # type: ignore[no-untyped-call]
+app.add_middleware(RefererCheckMiddleware)  # type: ignore[no-untyped-call]
 
 app.include_router(router)
-
-app.middleware("http")(process_time_middleware)
