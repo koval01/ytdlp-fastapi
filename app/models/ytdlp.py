@@ -38,7 +38,7 @@ class YouTubeResponse(BaseModel):
     duration: Optional[int] = None
     view_count: int
     age_limit: int
-    categories: List[str]
+    categories: Optional[List[str]] = []
     tags: List[str]
     comment_count: Optional[int] = None
     like_count: int
@@ -49,7 +49,7 @@ class YouTubeResponse(BaseModel):
     uploader_id: str
     uploader_url: HttpUrl
     upload_date: str
-    timestamp: int
+    timestamp: Optional[int] = None
     availability: str
     manifest_url: HttpUrl
     display_id: str
