@@ -2,10 +2,10 @@
 Route handler for /v1/video/{video_id}
 """
 
+import asyncio
 from typing import Annotated, Dict, Any
 
 import yt_dlp
-import asyncio
 from fastapi import Request, HTTPException, APIRouter, Header
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
