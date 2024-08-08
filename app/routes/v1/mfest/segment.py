@@ -3,14 +3,13 @@ Route handler for /v1/manifest/segment/{segment_token}
 """
 
 import re
-from io import BytesIO
+from typing import AsyncIterable
 
 from aiohttp import ClientSession, ClientResponseError
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
-from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type, RetryError
 from yarl import URL
 
 from app.models.crypto import CryptoObject
@@ -18,14 +17,6 @@ from app.models.error import HTTPError
 from app.utils.crypto import Cryptography
 
 router = APIRouter()
-
-
-@retry(stop=stop_after_attempt(2), wait=wait_fixed(1), retry=retry_if_exception_type(ClientResponseError))
-async def fetch_segment_data(url: str) -> BytesIO:
-    async with ClientSession() as session:
-        async with session.get(URL(url, encoded=True)) as response:
-            response.raise_for_status()
-            return BytesIO(await response.read())
 
 
 @router.get(
@@ -48,22 +39,18 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
     try:
         data = CryptoObject(**data)
     except ValidationError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=e.__name__)
 
     if str(data.client_host) != request.client.host:
         raise HTTPException(status_code=400, detail="Invalid segment token")
 
-    try:
-        segment_data = await fetch_segment_data(str(data.url))
-        return StreamingResponse(
-            segment_data,
-            media_type='application/octet-stream'
-        )
-    except RetryError as e:
-        # Extract the last attempt exception
-        last_attempt = e.last_attempt
-        if last_attempt.exception():
-            raise HTTPException(status_code=500, detail=f"Failed after retries: {str(last_attempt.exception())}")
-        raise HTTPException(status_code=500, detail="Unknown error after retries")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    async def stream_video() -> AsyncIterable[bytes]:
+        async with ClientSession() as session:
+            try:
+                async with session.get(URL(str(data.url), encoded=True)) as resp:
+                    async for chunk in resp.content.iter_chunked(1024):
+                        yield chunk
+            except ClientResponseError as _e:
+                raise HTTPException(status_code=500, detail=_e.__name__)
+
+    return StreamingResponse(content=stream_video(), media_type="application/octet-stream")
