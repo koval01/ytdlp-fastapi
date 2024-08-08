@@ -2,9 +2,10 @@
 Route handler for /v1/video/{video_id}
 """
 
-from typing import Annotated
+from typing import Annotated, Dict, Any
 
 import yt_dlp
+import asyncio
 from fastapi import Request, HTTPException, APIRouter, Header
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -19,6 +20,21 @@ from app.utils.url_replacer import URLValidator
 router = APIRouter()
 
 
+async def extract_info_async(ydl: yt_dlp.YoutubeDL, video_url: str) -> Dict[str, Any]:
+    """
+    Asynchronously extract information from a YouTube video URL using yt_dlp.
+
+    Args:
+        ydl (yt_dlp.YoutubeDL): An instance of the yt_dlp.YoutubeDL class.
+        video_url (str): The URL of the YouTube video.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the extracted video information.
+    """
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, ydl.extract_info, video_url, False)
+
+
 @router.get(
     "/video/{video_id}",
     summary="Get video information",
@@ -29,7 +45,7 @@ router = APIRouter()
     },
     tags=["Video"]
 )
-def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Header()] = None) -> JSONResponse:
+async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Header()] = None) -> JSONResponse:
     """Request handler"""
     if x_secret != settings.SECRET_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
@@ -38,8 +54,6 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
         'no_warnings': True,
         'noprogress': True,
         'quiet': True,
-        # since downloading cookies from a file, and even more so from a browser,
-        # is problematic on hosting, so the following authorization method is used
         'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
     }
     if not settings.HLS_MODE:
@@ -47,13 +61,10 @@ def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Heade
 
     with yt_dlp.YoutubeDL(yt_dlp_options) as ydl:
         try:
-            resp = ydl.extract_info(
-                f"https://www.youtube.com/watch?v={video_id}",
-                download=False
-            )
+            resp = await extract_info_async(ydl, f"https://www.youtube.com/watch?v={video_id}")
             _validator = URLValidator(request)
             return JSONResponse(
                 content=jsonable_encoder(_validator.replace_urls(resp).model_dump())
             )
         except Exception as e:
-            raise HTTPException(status_code=400, detail=e.__name__)
+            raise HTTPException(status_code=400, detail=str(e))
