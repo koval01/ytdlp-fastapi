@@ -7,33 +7,33 @@
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/inter" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/skeleton.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/demo.css') }}">
 </head>
 <body>
-    <header>
-        <div class="logo">MyYouTube</div>
-        <div class="search-bar">
-            <input type="text" placeholder="Search">
-            <button>Search</button>
-        </div>
-    </header>
     <main>
-        <aside class="sidebar">
-            <nav>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Trending</a></li>
-                    <li><a href="#">Subscriptions</a></li>
-                </ul>
-            </nav>
-        </aside>
         <section class="content">
             <div class="video-player" id="videoPlayerContainer" data-video-id="{{ video_id }}" data-secret-key="{{ secret_key }}">
                 <!-- The video player will be set up here by the JS file -->
             </div>
             <div class="video-info">
-                <h2>Video Title</h2>
-                <p>Video description goes here. This is a basic description of the video content.</p>
+                <div class="title-container">
+                    <h2><!-- Title place --></h2>
+                    <div class="skeleton-container">
+                        <div class="ssc-line title-skeleton"></div>
+                    </div>
+                </div>
+                <div class="description-container">
+                    <p><!-- Description place --></p>
+                    <div class="skeleton-container description-skeleton">
+                        <div class="ssc-line" style="width: 60%"></div>
+                        <div class="ssc-line" style="width: 50%"></div>
+                        <div class="ssc-line" style="width: 70%"></div>
+                        <div class="ssc-line" style="width: 35%"></div>
+                        <div class="ssc-line" style="width: 45%"></div>
+                        <div class="ssc-line" style="width: 55%"></div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>

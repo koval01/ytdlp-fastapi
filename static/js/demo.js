@@ -47,12 +47,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }),
         });
 
+        const skeletons = document.getElementsByClassName('skeleton-container');
+        while(skeletons[0]) {
+            skeletons[0].parentNode.removeChild(skeletons[0]);
+        }
+
         // Update video title in video-info section
-        const videoTitleElement = document.querySelector('.video-info h2');
+        const videoTitleElement = document.querySelector('.title-container h2');
         videoTitleElement.textContent = title;
 
         // Update video description
-        const videoDescriptionElement = document.querySelector('.video-info p');
+        const videoDescriptionElement = document.querySelector('.description-container p');
         videoDescriptionElement.innerHTML = description.replaceAll(/\n/g, "<br />");
     }
 
