@@ -28,7 +28,7 @@ class HLSReplacer:
                 if settings.NGINX_PROXY:
                     _path = urllib.parse.urlparse(url)
                     _fpath = f"{_path.path}?{_path.query}"
-                    new_url = f"{_host}/hls/{_fpath}/{_fpath}"
+                    new_url = f"{_host}/hls/{_path.hostname.split('.')[0]}{_fpath}"
                 else:
                     new_url = f"{_host}/v1/manifest/segment/{_data}.ts"
 
