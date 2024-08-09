@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     COOKIES: str = ''
     HLS_MODE: int = 1
     OVERWRITE_SCHEME: str | None = None  # string like http / https
+    NGINX_PROXY: int = 0
 
     class Config:
         env_file = "./.env.local"
