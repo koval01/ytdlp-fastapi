@@ -37,10 +37,16 @@ class URLValidator:
             The encrypted local URL if the input URL matches the pattern, otherwise returns the original URL.
         """
         match_playback = self.url_pattern_playback.search(url)
+
+        client_host = self.request.client.host
+        x_host = self.request.headers.get("X-Client-Host")
+        if settings.REST_MODE and x_host:
+            client_host = x_host
+
         if match_playback:
             _data = self.crypto.encrypt_json({
                 'url': url,
-                'client_host': self.request.client.host
+                'client_host': client_host
             })
             return f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/playback/{_data}"
 
@@ -48,7 +54,7 @@ class URLValidator:
         if match_manifest:
             _data = self.crypto.encrypt_json({
                 'url': url,
-                'client_host': self.request.client.host
+                'client_host': client_host
             })
             return f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/manifest/hls/{_data}"
 

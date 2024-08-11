@@ -1,5 +1,6 @@
 import re
 from typing import Callable
+from urllib.parse import urlparse
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -21,11 +22,16 @@ def is_valid_referer(referer: str, allowed_hosts: list[str]) -> bool:
     """
     for host in allowed_hosts:
         if host.startswith("*."):
-            pattern = re.escape(host[2:]) + r"$"
-            if re.search(r"https?://[^/]*\." + pattern, referer):
+            # Remove the wildcard and prepare pattern to match subdomains or the main domain
+            domain_pattern = re.escape(host[2:])
+            # Match any subdomain or the main domain with optional port and optional trailing slash
+            pattern = rf"^(?:.+\.)?{domain_pattern}$"
+            if re.match(pattern, referer):
                 return True
         else:
-            if re.search(rf"https?://{re.escape(host)}(:[0-9]+)?/", referer):
+            # Exact match with optional port and optional trailing slash
+            pattern = rf"^{re.escape(host)}$"
+            if re.match(pattern, referer):
                 return True
     return False
 
@@ -46,6 +52,7 @@ class RefererCheckMiddleware(BaseHTTPMiddleware):
         if request.url.path.startswith("/v1/"):
             x_secret = request.headers.get("X-Secret")
             referer = request.headers.get("Referer")
+            referer = urlparse(referer).netloc
 
             if x_secret != settings.SECRET_KEY:
                 if not referer:

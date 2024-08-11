@@ -22,10 +22,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,  # type: ignore[no-untyped-call]
-    allow_origins=allowed_hosts,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET"],
-    allow_headers=["X-Secret"],
+    allow_headers=["X-Secret", "X-Client-Host'"],
 )
 app.add_middleware(
     TrustedHostMiddleware,  # type: ignore[no-untyped-call]

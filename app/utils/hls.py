@@ -14,13 +14,18 @@ class HLSReplacer:
         playlist = m3u8.loads(manifest_content)
         cryptography = Cryptography()
 
+        client_host = request.client.host
+        x_host = request.headers.get("X-Client-Host")
+        if settings.REST_MODE and x_host:
+            client_host = x_host
+
         # Function to replace URLs in the playlist
         def replace_url(url):
             # Construct the new URL based on the type
             _host = f"{Filter.scheme(request)}://{request.url.netloc}"
             _data = cryptography.encrypt_json({
                 'url': url,
-                'client_host': request.client.host
+                'client_host': client_host
             })
             if 'hls_playlist' in url:
                 new_url = f"{_host}/v1/manifest/hls/{_data}.m3u8"
