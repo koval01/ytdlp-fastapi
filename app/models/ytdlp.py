@@ -50,7 +50,7 @@ class YouTubeResponse(BaseModel):
     uploader_url: HttpUrl
     upload_date: str
     timestamp: Optional[int] = None
-    availability: str
+    availability: Optional[str] = None
     manifest_url: HttpUrl
     display_id: str
     fulltitle: str
