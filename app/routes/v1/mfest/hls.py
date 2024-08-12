@@ -43,8 +43,8 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
     except ValidationError as e:
         raise HTTPException(status_code=503, detail=str(e))
 
-    if str(data.client_host) != request.client.host:
-        raise HTTPException(status_code=400, detail="Invalid manifest token")
+    # if str(data.client_host) != request.client.host:
+    #     raise HTTPException(status_code=400, detail="Invalid manifest token")
 
     async with ClientSession() as session:
         try:
