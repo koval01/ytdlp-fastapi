@@ -54,6 +54,8 @@ async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None,
         'no_warnings': True,
         'noprogress': True,
         'quiet': True,
+        'getcomments': True,
+        'extractor_args': {'youtube': {'max_comments': ['20']}},
         'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
     }
     if not settings.HLS_MODE:
