@@ -1,4 +1,5 @@
 import re
+import logging
 
 from aiohttp import ClientSession
 from cryptography.fernet import InvalidToken
@@ -13,6 +14,7 @@ from app.utils.crypto import Cryptography
 from app.utils.hls import HLSReplacer
 
 router = APIRouter()
+logger = logging.getLogger("hls_manifest")
 
 MANIFEST_TOKEN_PATTERN = re.compile(r'\.[a-zA-Z0-9]+$')
 cryptography = Cryptography()
@@ -35,8 +37,9 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
     try:
         token = MANIFEST_TOKEN_PATTERN.sub('', manifest_token)
         data = cryptography.decrypt_json(token)
-    except InvalidToken:
-        raise HTTPException(status_code=400, detail="Invalid manifest token")
+    except InvalidToken as e:
+        logger.warning(f"Error validation manifest token. Details: {e}")
+        raise HTTPException(status_code=400)
 
     try:
         data = CryptoObject(**data)
@@ -44,7 +47,8 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
         raise HTTPException(status_code=503, detail=str(e))
 
     if str(data.client_host) != request.client.host:
-        raise HTTPException(status_code=400, detail="Invalid manifest token")
+        logger.warning(f"Client IP is invalid. C:{str(data.client_host)} F:{request.client.host}")
+        raise HTTPException(status_code=400)
 
     async with ClientSession() as session:
         try:

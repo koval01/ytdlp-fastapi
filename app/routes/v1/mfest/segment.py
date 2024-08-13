@@ -1,4 +1,5 @@
 import re
+import logging
 from typing import AsyncIterable
 
 from aiohttp import ClientSession, ClientResponseError
@@ -13,6 +14,7 @@ from app.models.error import HTTPError
 from app.utils.crypto import Cryptography
 
 router = APIRouter()
+logger = logging.getLogger("hls_segment")
 
 SEGMENT_TOKEN_PATTERN = re.compile(r'\.[a-zA-Z0-9]+$')
 cryptography = Cryptography()
@@ -33,8 +35,9 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
     try:
         token = SEGMENT_TOKEN_PATTERN.sub('', segment_token)
         data = cryptography.decrypt_json(token)
-    except InvalidToken:
-        raise HTTPException(status_code=400, detail="Invalid segment token")
+    except InvalidToken as e:
+        logger.warning(f"Error validation segment token. Details: {e}")
+        raise HTTPException(status_code=400)
 
     try:
         data = CryptoObject(**data)
@@ -42,7 +45,8 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
         raise HTTPException(status_code=500, detail=str(e))
 
     if str(data.client_host) != request.client.host:
-        raise HTTPException(status_code=400, detail="Invalid segment token")
+        logger.warning(f"Client IP is invalid. C:{str(data.client_host)} F:{request.client.host}")
+        raise HTTPException(status_code=400)
 
     async def stream_video() -> AsyncIterable[bytes]:
         async with ClientSession() as session:

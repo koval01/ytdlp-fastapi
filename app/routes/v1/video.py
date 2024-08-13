@@ -6,6 +6,7 @@ from typing import Annotated, Dict, Any
 
 import yt_dlp
 import asyncio
+import logging
 from fastapi import Request, HTTPException, APIRouter, Header
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -17,6 +18,7 @@ from app.utils.cookies import CookieConverter
 from app.utils.url_replacer import URLValidator
 
 router = APIRouter()
+logger = logging.getLogger("video_fetch")
 
 
 async def extract_info_async(ydl: yt_dlp.YoutubeDL, video_url: str) -> Dict[str, Any]:
@@ -65,4 +67,5 @@ async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None,
                 content=jsonable_encoder(_validator.replace_urls(resp).model_dump())
             )
         except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            logger.warning(f"Error fetch video with ID:{video_id}. Error details: {e}")
+            raise HTTPException(status_code=500, detail="Internal application error")
