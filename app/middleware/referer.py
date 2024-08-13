@@ -9,34 +9,36 @@ from starlette.types import ASGIApp
 
 from app.utils.config import settings
 
-def is_valid_referer(referer: str, allowed_hosts: list[str]) -> bool:
+
+def is_valid_referer_or_origin(host: str, allowed_hosts: list[str]) -> bool:
     """
-    Validates the referer against a list of allowed hosts.
+    Validates the referer or origin against a list of allowed hosts.
 
     Args:
-        referer (str): The referer domain to be checked.
+        host (str): The host domain to be checked.
         allowed_hosts (list[str]): A list of allowed host patterns.
 
     Returns:
-        bool: True if the referer is valid, False otherwise.
+        bool: True if the host is valid, False otherwise.
     """
-    for host in allowed_hosts:
-        if host.startswith("*."):
+    for allowed_host in allowed_hosts:
+        if allowed_host.startswith("*."):
             # Pattern to match subdomains
-            domain_pattern = re.escape(host[2:])
+            domain_pattern = re.escape(allowed_host[2:])
             pattern = rf"^(?:.+\.)?{domain_pattern}(:\d+)?$"
-            if re.match(pattern, referer):
+            if re.match(pattern, host):
                 return True
         else:
             # Exact match pattern
-            pattern = rf"^{re.escape(host)}(:\d+)?$"
-            if re.match(pattern, referer):
+            pattern = rf"^{re.escape(allowed_host)}(:\d+)?$"
+            if re.match(pattern, host):
                 return True
     return False
 
+
 class RefererCheckMiddleware(BaseHTTPMiddleware):
     """
-    Middleware to check the 'Referer' header for certain routes and validate it against allowed hosts.
+    Middleware to check the 'Referer' or 'Origin' headers for certain routes and validate them against allowed hosts.
     """
 
     def __init__(self, app: ASGIApp) -> None:
@@ -44,7 +46,7 @@ class RefererCheckMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """
-        Processes incoming requests, checking the 'Referer' header for specific paths.
+        Processes incoming requests, checking the 'Referer' or 'Origin' headers for specific paths.
 
         Args:
             request (Request): The incoming request object.
@@ -58,18 +60,21 @@ class RefererCheckMiddleware(BaseHTTPMiddleware):
             # Retrieve the 'X-Secret' and 'Referer' headers
             x_secret = request.headers.get("X-Secret")
             referer = request.headers.get("Referer")
-            referer = urlparse(referer).netloc  # Extract the netloc (domain) from the referer URL
+            origin = request.headers.get("Origin")
 
-            # Check if the secret key matches; if not, validate the referer
+            # Extract the netloc (domain) from the referer or origin URL
+            host = urlparse(referer).netloc if referer else urlparse(origin).netloc
+
+            # Check if the secret key matches; if not, validate the referer or origin
             if x_secret != settings.SECRET_KEY:
-                if not referer:
-                    logger.warning(f"Blocked request to {request.url.path} due to missing referer")
+                if not host:
+                    logger.warning(f"Blocked request to {request.url.path} due to missing referer or origin")
                     return Response(content=None, status_code=400)
 
-                # Split allowed hosts from settings and validate the referer
+                # Split allowed hosts from settings and validate the referer or origin
                 allowed_hosts = settings.ALLOWED_HOSTS.split(",")
-                if not is_valid_referer(referer, allowed_hosts):
-                    logger.warning(f"Blocked request to {request.url.path} from invalid referer: {referer}")
+                if not is_valid_referer_or_origin(host, allowed_hosts):
+                    logger.warning(f"Blocked request to {request.url.path} from invalid referer or origin: {host}")
                     return Response(content=None, status_code=400)
 
         # Proceed with the request if validation passes
