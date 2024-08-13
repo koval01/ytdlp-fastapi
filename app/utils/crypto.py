@@ -60,7 +60,7 @@ class Cryptography:
         """
         return self.fernet.decrypt(
             _input.encode() + b'=' * (-len(_input) % 4),
-            ttl=3600
+            ttl=settings.CRYPT_TTL
         ).decode()
 
     def decrypt_json(self, _input: str) -> dict:
