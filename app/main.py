@@ -1,11 +1,13 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.middleware.node import NodeMiddleware
 from app.middleware.process_time import ProcessTimeMiddleware
 from app.middleware.referer import RefererCheckMiddleware
-from app.middleware.node import NodeMiddleware
 from app.routes import router
 from app.utils.config import settings
 
@@ -18,14 +20,15 @@ app = FastAPI(
     openapi_url=None if bool(settings.DISABLE_DOCS) else "/openapi.json"
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+if not bool(settings.DISABLE_DEMO):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,  # type: ignore[no-untyped-call]
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET"],
-    allow_headers=["X-Secret", "X-Client-Host'"],
+    allow_headers=["X-Secret", "X-Client-Host"],
 )
 app.add_middleware(
     TrustedHostMiddleware,  # type: ignore[no-untyped-call]

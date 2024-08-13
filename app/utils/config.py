@@ -18,9 +18,6 @@ class Settings(BaseSettings):
     DISABLE_DEMO: int = 0
     COOKIES_URL: str = 'https://gist.githubusercontent.com/username/hex/raw/hex/file.txt'
     COOKIES: str = ''
-    HLS_MODE: int = 1
-    OVERWRITE_SCHEME: str | None = None  # string like http / https
-    NGINX_PROXY: int = 0
     REST_MODE: int = 0
 
     class Config:

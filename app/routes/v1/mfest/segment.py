@@ -41,8 +41,8 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
     except ValidationError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    # if str(data.client_host) != request.client.host:
-    #     raise HTTPException(status_code=400, detail="Invalid segment token")
+    if str(data.client_host) != request.client.host:
+        raise HTTPException(status_code=400, detail="Invalid segment token")
 
     async def stream_video() -> AsyncIterable[bytes]:
         async with ClientSession() as session:

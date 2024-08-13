@@ -5,7 +5,6 @@ from fastapi import Request
 from app.models.ytdlp import YouTubeResponse
 from app.utils.config import settings
 from app.utils.crypto import Cryptography
-from app.utils.filter import Filter
 
 
 class URLValidator:
@@ -16,7 +15,6 @@ class URLValidator:
 
     def __init__(self, request: Request) -> None:
         self.request = request
-        self.hls_mode = bool(settings.HLS_MODE)
         self.url_pattern_playback = re.compile(
             r"https://rr(?P<host>[^/]+)\.(?:googlevideo|c\.youtube)\.com/videoplayback\?(?P<query>.+)"
         )
@@ -48,7 +46,7 @@ class URLValidator:
                 'url': url,
                 'client_host': client_host
             })
-            return f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/playback/{_data}"
+            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/playback/{_data}"
 
         match_manifest = self.url_pattern_manifest.search(url)
         if match_manifest:
@@ -56,7 +54,7 @@ class URLValidator:
                 'url': url,
                 'client_host': client_host
             })
-            return f"{Filter.scheme(self.request)}://{self.request.url.netloc}/v1/manifest/hls/{_data}"
+            return f"{self.request.url.scheme}://{self.request.url.netloc}/v1/manifest/hls/{_data}"
 
         return url
 
@@ -73,7 +71,7 @@ class URLValidator:
                     data[key] = self._replace_url(value)
                 elif isinstance(value, (dict, list)):
                     self._process_data(value)
-            if self.hls_mode and 'formats' in data:
+            if 'formats' in data:
                 filtered_formats = [
                     item for item in data['formats']
                     if item['video_ext'] == "mp4" and item['protocol'] == "m3u8_native"

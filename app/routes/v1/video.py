@@ -14,7 +14,6 @@ from app.models.error import HTTPError
 from app.models.ytdlp import YouTubeResponse
 from app.utils.config import settings
 from app.utils.cookies import CookieConverter
-from app.utils.dlp_utils import DLPUtils
 from app.utils.url_replacer import URLValidator
 
 router = APIRouter()
@@ -58,9 +57,6 @@ async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None,
         'extractor_args': {'youtube': {'max_comments': ['20']}},
         'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
     }
-    if not settings.HLS_MODE:
-        yt_dlp_options["format"] = DLPUtils.format_selector
-
     with yt_dlp.YoutubeDL(yt_dlp_options) as ydl:
         try:
             resp = await extract_info_async(ydl, f"https://www.youtube.com/watch?v={video_id}")

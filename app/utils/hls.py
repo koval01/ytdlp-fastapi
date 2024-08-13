@@ -1,10 +1,7 @@
-import urllib.parse
-
 import m3u8
 from fastapi import Request
 
 from app.utils.crypto import Cryptography
-from app.utils.filter import Filter
 from app.utils.config import settings
 
 
@@ -22,7 +19,7 @@ class HLSReplacer:
         # Function to replace URLs in the playlist
         def replace_url(url):
             # Construct the new URL based on the type
-            _host = f"{Filter.scheme(request)}://{request.url.netloc}"
+            _host = f"{request.url.scheme}://{request.url.netloc}"
             _data = cryptography.encrypt_json({
                 'url': url,
                 'client_host': client_host
@@ -30,12 +27,7 @@ class HLSReplacer:
             if 'hls_playlist' in url:
                 new_url = f"{_host}/v1/manifest/hls/{_data}.m3u8"
             else:
-                if settings.NGINX_PROXY:
-                    _path = urllib.parse.urlparse(url)
-                    _fpath = f"{_path.path}?{_path.query}"
-                    new_url = f"{_host}/hls/{_path.hostname.split('.')[0]}{_fpath}"
-                else:
-                    new_url = f"{_host}/v1/manifest/segment/{_data}.ts"
+                new_url = f"{_host}/v1/manifest/segment/{_data}.ts"
 
             return new_url
 

@@ -1,8 +1,5 @@
 from typing import Any
 
-from fastapi import Request
-from app.utils.config import settings
-
 
 class Filter:
     @staticmethod
@@ -16,8 +13,3 @@ class Filter:
         :return: Filtered list of dictionaries
         """
         return [item for item in data if item.get(key) in values]
-
-    @staticmethod
-    def scheme(request: Request) -> str:
-        _ovr: str | None = settings.OVERWRITE_SCHEME
-        return request.url.scheme if not _ovr else _ovr
