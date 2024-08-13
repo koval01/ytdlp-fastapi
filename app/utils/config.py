@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = 'devsecretkey'
     DISABLE_DOCS: int = 0
     DISABLE_DEMO: int = 0
+    DISABLE_HOST_VALIDATION: int = 0
     COOKIES_URL: str = 'https://gist.githubusercontent.com/username/hex/raw/hex/file.txt'
     COOKIES: str = ''
     REST_MODE: int = 0
