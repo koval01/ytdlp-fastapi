@@ -1,67 +1,54 @@
-from typing import List, Optional, Dict, Union
+from typing import List, Optional
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, HttpUrl, AliasChoices
 
 
-class Format(BaseModel):
-    format: str
-    format_id: str
-    ext: str
-    protocol: str
-    language: Optional[str]
-    format_note: Optional[str]
-    filesize_approx: Optional[int]
-    tbr: Optional[float]
-    width: Optional[int]
-    height: Optional[int]
-    resolution: Optional[str]
-    fps: Optional[float]
-    dynamic_range: Optional[str]
-    vcodec: Optional[str]
-    vbr: Optional[float]
-    stretched_ratio: Optional[float]
-    aspect_ratio: Optional[float]
-    acodec: Optional[str]
-    abr: Optional[float]
-    asr: Optional[int]
-    audio_channels: Optional[int]
-    manifest_url: Optional[HttpUrl]
-
+class Comment(BaseModel):
+    id: str
+    parent: Optional[str] = "root"
+    text: str
+    like_count: Optional[int] = 0
+    author_id: str
+    author: str
+    author_thumbnail: Optional[HttpUrl] = None
+    author_is_uploader: Optional[bool] = False
+    author_is_verified: Optional[bool] = False
+    author_url: Optional[HttpUrl] = None
+    is_favorited: Optional[bool] = False
+    timestamp: int
+    is_pinned: Optional[bool] = False
+    time_text: str = Field(validation_alias=AliasChoices('_time_text'))
 
 class YouTubeResponse(BaseModel):
     id: str
     title: str
-    thumbnail: str
-    description: str
+    thumbnail: HttpUrl
+    description: Optional[str] = None
     channel_id: str
     channel_url: HttpUrl
     duration: Optional[int] = None
     view_count: int
     age_limit: int
     categories: Optional[List[str]] = []
-    tags: List[str]
+    tags: Optional[List[str]] = []
     comment_count: Optional[int] = None
-    like_count: int
+    like_count: Optional[int] = 0
     channel: str
+    channel_id: str = Field(validation_alias=AliasChoices('uploader_id'))
     channel_follower_count: Optional[int] = None
     channel_is_verified: Optional[bool] = False
-    uploader: str
-    uploader_id: str
-    uploader_url: HttpUrl
+    channel_url: HttpUrl = Field(validation_alias=AliasChoices('uploader_url'))
     upload_date: str
     timestamp: Optional[int] = None
     availability: Optional[str] = None
     manifest_url: HttpUrl
     display_id: str
-    fulltitle: str
+    full_title: str = Field(validation_alias=AliasChoices('fulltitle'))
     duration_string: Optional[str] = None
     is_live: bool
     was_live: bool
     epoch: int
-    formats: List[Format] = Field(default_factory=list)
-
-    @field_validator('formats')
-    def parse_formats(cls, value: Union[List[Dict], Dict]) -> List[Format]:
-        if isinstance(value, dict):
-            return [Format(**value)]
-        return [Format(**f) for f in value]
+    resolution: Optional[str] = None
+    fps: Optional[int] = None
+    filesize_approx: Optional[int] = None
+    comments: Optional[List[Comment]] = []
