@@ -1,10 +1,10 @@
 import re
-import logging
 from typing import AsyncIterable
 
 from aiohttp import ClientSession, ClientResponseError
 from cryptography.fernet import InvalidToken
 from fastapi import Request, APIRouter, HTTPException
+from fastapi.logger import logger
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 from yarl import URL
@@ -14,7 +14,6 @@ from app.models.error import HTTPError
 from app.utils.crypto import Cryptography
 
 router = APIRouter()
-logger = logging.getLogger("hls_segment")
 
 SEGMENT_TOKEN_PATTERN = re.compile(r'\.[a-zA-Z0-9]+$')
 cryptography = Cryptography()

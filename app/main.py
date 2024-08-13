@@ -6,6 +6,9 @@ from fastapi.staticfiles import StaticFiles
 from app.middleware.node import NodeMiddleware
 from app.middleware.process_time import ProcessTimeMiddleware
 from app.middleware.referer import RefererCheckMiddleware
+
+from asgi_correlation_id import CorrelationIdMiddleware
+
 from app.routes import router
 from app.utils.config import settings
 
@@ -26,6 +29,11 @@ app = FastAPI(
 if not bool(settings.DISABLE_DEMO):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
+app.add_middleware(
+    CorrelationIdMiddleware,  # type: ignore[no-untyped-call]
+    header_name='X-FAN-Request-ID'  # FAN - FastAPI Node
+)
+
 # Add CORS middleware to handle cross-origin requests
 app.add_middleware(
     CORSMiddleware,  # type: ignore[no-untyped-call]
@@ -33,6 +41,7 @@ app.add_middleware(
     allow_credentials=True,  # Allow credentials in requests
     allow_methods=["GET"],  # Allow only GET requests
     allow_headers=["X-Secret", "X-Client-Host"],  # Allow specific headers
+    expose_headers=['X-FAN-Request-ID']
 )
 
 # Add middleware to restrict requests to allowed hosts

@@ -2,13 +2,13 @@
 Route handler for /v1/video/{video_id}
 """
 
+import asyncio
 from typing import Annotated, Dict, Any
 
 import yt_dlp
-import asyncio
-import logging
 from fastapi import Request, HTTPException, APIRouter, Header
 from fastapi.encoders import jsonable_encoder
+from fastapi.logger import logger
 from fastapi.responses import JSONResponse
 
 from app.models.error import HTTPError
@@ -18,7 +18,6 @@ from app.utils.cookies import CookieConverter
 from app.utils.url_replacer import URLValidator
 
 router = APIRouter()
-logger = logging.getLogger("video_fetch")
 
 
 async def extract_info_async(ydl: yt_dlp.YoutubeDL, video_url: str) -> Dict[str, Any]:

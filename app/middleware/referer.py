@@ -1,5 +1,5 @@
 import re
-import logging
+from fastapi.logger import logger
 from typing import Callable
 from urllib.parse import urlparse
 
@@ -8,9 +8,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from app.utils.config import settings
-
-# Initialize logger for referer check middleware
-logger = logging.getLogger("referer_check")
 
 def is_valid_referer(referer: str, allowed_hosts: list[str]) -> bool:
     """
