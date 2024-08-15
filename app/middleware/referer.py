@@ -66,7 +66,7 @@ class RefererCheckMiddleware(BaseHTTPMiddleware):
             host = urlparse(referer).netloc if referer else urlparse(origin).netloc
 
             # Check if the secret key matches; if not, validate the referer or origin
-            if x_secret != settings.SECRET_KEY:
+            if bool(settings.DISABLE_TURNSTILE) and x_secret != settings.SECRET_KEY:
                 if not host:
                     logger.warning(f"Blocked request to {request.url.path} due to missing referer or origin")
                     return Response(content=None, status_code=400)

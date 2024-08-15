@@ -44,7 +44,7 @@ async def segment(request: Request, segment_token: str) -> StreamingResponse:
     except ValidationError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    if not settings.DISABLE_HOST_VALIDATION:
+    if not bool(settings.DISABLE_HOST_VALIDATION):
         if str(data.client_host) != request.client.host:
             logger.warning(f"Client IP is invalid. C:{str(data.client_host)} F:{request.client.host}")
             raise HTTPException(status_code=400)

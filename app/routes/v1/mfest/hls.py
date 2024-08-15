@@ -46,7 +46,7 @@ async def hls_manifest(request: Request, manifest_token: str) -> Response:
     except ValidationError as e:
         raise HTTPException(status_code=503, detail=str(e))
 
-    if not settings.DISABLE_HOST_VALIDATION:
+    if not bool(settings.DISABLE_HOST_VALIDATION):
         if str(data.client_host) != request.client.host:
             logger.warning(f"Client IP is invalid. C:{str(data.client_host)} F:{request.client.host}")
             raise HTTPException(status_code=400)

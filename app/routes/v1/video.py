@@ -16,6 +16,7 @@ from app.models.ytdlp import YouTubeResponse
 from app.utils.config import settings
 from app.utils.cookies import CookieConverter
 from app.utils.url_replacer import URLValidator
+from app.utils.turnstile import TurnstileValidator
 
 router = APIRouter()
 
@@ -47,8 +48,19 @@ async def extract_info_async(ydl: yt_dlp.YoutubeDL, video_url: str) -> Dict[str,
 )
 async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None, Header()] = None) -> JSONResponse:
     """Request handler"""
-    if x_secret != settings.SECRET_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    logger.info(f"Client {request.client.host} requested video {video_id} with X-Secret {x_secret}")
+    if not x_secret:
+        raise HTTPException(status_code=401)
+
+    if bool(settings.DISABLE_TURNSTILE):
+        if x_secret != settings.SECRET_KEY:
+            logger.warning(f"x_secret != settings.SECRET_KEY for {request.client.host}")
+            raise HTTPException(status_code=401)
+    else:
+        turnstile_status = await TurnstileValidator().validate(x_secret)
+        if not turnstile_status:
+            logger.warning(f"Not valid turnstile key for {request.client.host}")
+            raise HTTPException(status_code=401)
 
     yt_dlp_options = {
         'no_warnings': True,
