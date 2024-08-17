@@ -13,7 +13,7 @@ def fetch_cookies_data(url: str) -> str:
 class Settings(BaseSettings):
     ALLOWED_HOSTS: str = 'localhost,127.0.0.1,*.trycloudflare.com'
     CRYPT_KEY: str = 'fl5JcIwHh0SM87Vl18B_Sn65lVOwhYIQ3fnfGYqpVlE='
-    CRYPT_TTL: int = 1200
+    CRYPT_TTL: int = 28800
     SECRET_KEY: str = 'devsecretkey'
     TURNSTILE_KEY: str = ''
     DISABLE_TURNSTILE: int = 1
