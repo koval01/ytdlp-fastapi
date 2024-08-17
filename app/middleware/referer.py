@@ -57,8 +57,12 @@ class RefererCheckMiddleware(BaseHTTPMiddleware):
         """
         # Apply referer check only to specific paths (e.g., those starting with /v1/)
         if request.url.path.startswith("/v1/"):
-            # Retrieve the 'X-Secret' and 'Referer' headers
             x_secret = request.headers.get("X-Secret")
+
+            if bool(settings.DISABLE_TURNSTILE) and x_secret == settings.SECRET_KEY:
+                response = await call_next(request)
+                return response
+
             referer = request.headers.get("Referer")
             origin = request.headers.get("Origin")
 
@@ -66,7 +70,7 @@ class RefererCheckMiddleware(BaseHTTPMiddleware):
             host = urlparse(referer).netloc if referer else urlparse(origin).netloc
 
             # Check if the secret key matches; if not, validate the referer or origin
-            if bool(settings.DISABLE_TURNSTILE) and x_secret != settings.SECRET_KEY:
+            if not request.url.path.startswith("/v1/video/"):
                 if not host:
                     logger.warning(f"Blocked request to {request.url.path} due to missing referer or origin")
                     return Response(content=None, status_code=400)
