@@ -38,6 +38,8 @@ class TurnstileValidator:
         return True
 
     async def validate(self, response_token: str) -> bool:
+        if settings.SECRET_KEY == "XXXX.DUMMY.TOKEN.XXXX":
+            return True
         if not self.prevalidate(response_token):
             return False
 
@@ -52,7 +54,7 @@ class TurnstileValidator:
                     return False
 
                 result = await resp.json()
-                logger.info(f"Turnstile response:\n{result}")
+                logger.info(f"Turnstile response: {result}")
 
                 if not self.ttl_check(result):
                     return False
