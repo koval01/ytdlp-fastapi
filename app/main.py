@@ -40,7 +40,7 @@ app.add_middleware(
     allow_origins=["*"],  # Allow requests from any origin
     allow_credentials=True,  # Allow credentials in requests
     allow_methods=["GET"],  # Allow only GET requests
-    allow_headers=["X-Secret", "X-Client-Host"],  # Allow specific headers
+    allow_headers=["X-Secret", "X-Sign", "X-Client-Host"],  # Allow specific headers
     expose_headers=['X-FAN-Request-ID']
 )
 

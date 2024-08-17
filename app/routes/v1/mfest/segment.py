@@ -9,6 +9,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 from yarl import URL
 
+from app.decorators.sign import sign_validator
+
 from app.models.crypto import CryptoObject
 from app.models.error import HTTPError
 from app.utils.config import settings
@@ -30,6 +32,7 @@ cryptography = Cryptography()
     },
     tags=["Util"]
 )
+@sign_validator
 async def segment(request: Request, segment_token: str) -> StreamingResponse:
     """Request handler"""
     try:

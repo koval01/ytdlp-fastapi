@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     DISABLE_TURNSTILE: int = 1
     DISABLE_DOCS: int = 0
     DISABLE_DEMO: int = 0
+    DISABLE_SIGN: int = 1
     DISABLE_HOST_VALIDATION: int = 0
     COOKIES_URL: str = 'https://gist.githubusercontent.com/username/hex/raw/hex/file.txt'
     COOKIES: str = ''

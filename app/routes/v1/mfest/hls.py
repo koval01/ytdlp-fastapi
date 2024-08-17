@@ -8,6 +8,8 @@ from fastapi.responses import Response
 from pydantic import ValidationError
 from yarl import URL
 
+from app.decorators.sign import sign_validator
+
 from app.models.crypto import CryptoObject
 from app.models.error import HTTPError
 from app.utils.config import settings
@@ -32,6 +34,7 @@ cryptography = Cryptography()
     },
     tags=["Util"]
 )
+@sign_validator
 async def hls_manifest(request: Request, manifest_token: str) -> Response:
     """Request handler"""
     try:
