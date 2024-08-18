@@ -67,7 +67,12 @@ async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None,
         'noprogress': True,
         'quiet': True,
         'getcomments': True,
-        'extractor_args': {'youtube': {'max_comments': ['20']}},
+        'extractor_args': {
+            'youtube': {
+                'comment_sort': ['top'],
+                'max_comments': ['100', 'all', '0', '0'],
+            }
+        },
         'http_headers': {"Cookie": CookieConverter(settings.COOKIES).convert()},
     }
     with yt_dlp.YoutubeDL(yt_dlp_options) as ydl:
