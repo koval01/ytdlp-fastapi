@@ -5,5 +5,5 @@ asgi_correlation_id==4.3.2
 yt-dlp @ git+https://github.com/yt-dlp/yt-dlp@a065086640e888e8d58c615d52ed2f4f4e4c9d18
 
 requests~=2.32.3
-aiohttp~=3.10.3
+aiohttp~=3.10.4
 m3u8~=6.0.0
