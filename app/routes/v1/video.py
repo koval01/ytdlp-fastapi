@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from app.models.error import HTTPError
 from app.models.ytdlp import YouTubeResponse
 from app.utils.config import settings
+from app.utils.dlp_utils import DLPUtils
 from app.utils.cookies import CookieConverter
 from app.utils.url_replacer import URLValidator
 from app.utils.turnstile import TurnstileValidator
@@ -51,6 +52,10 @@ async def fetch(request: Request, video_id: str, x_secret: Annotated[str | None,
     logger.info(f"Client {request.client.host} requested video {video_id} with X-Secret {x_secret}")
     if not x_secret:
         raise HTTPException(status_code=401)
+
+    if not DLPUtils.validate_youtube_video_id(video_id):
+        logger.warning(f"Video id {video_id} is invalid")
+        raise HTTPException(status_code=400)
 
     if bool(settings.DISABLE_TURNSTILE):
         if x_secret != settings.SECRET_KEY:

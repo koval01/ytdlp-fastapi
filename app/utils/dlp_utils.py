@@ -1,3 +1,6 @@
+import re
+
+
 class DLPUtils:
     @staticmethod
     def format_selector(ctx) -> dict:
@@ -24,3 +27,17 @@ class DLPUtils:
             # Must be + separated list of protocols
             'protocol': f'{best_video["protocol"]}+{best_audio["protocol"]}'
         }
+
+    @staticmethod
+    def validate_youtube_video_id(video_id: str) -> bool:
+        """
+        Validates a YouTube video ID.
+
+        Parameters:
+        video_id (str): The YouTube video ID to validate.
+
+        Returns:
+        bool: True if the video ID is valid, False otherwise.
+        """
+        pattern = re.compile(r'^[a-zA-Z0-9_-]{11}$')
+        return bool(pattern.match(video_id))
