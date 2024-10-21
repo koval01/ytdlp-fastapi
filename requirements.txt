@@ -1,5 +1,5 @@
 fastapi[standard]==0.112.1
-pydantic_settings==2.4.0
+pydantic_settings==2.6.0
 cryptography==43.0.0
 asgi_correlation_id==4.3.2
 yt-dlp @ git+https://github.com/yt-dlp/yt-dlp@a7d3235c84dac57a127cbe0ff38f7f7c2fdd8fa0
