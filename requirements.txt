@@ -1,4 +1,4 @@
-fastapi[standard]==0.112.1
+fastapi[standard]==0.116.1
 pydantic_settings==2.4.0
 cryptography==43.0.0
 asgi_correlation_id==4.3.2
